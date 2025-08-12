@@ -63,7 +63,28 @@ namespace IUT_ACM_Solution.Controllers
         {
             if (!ModelState.IsValid) return View(loginDto);
 
-            var res = 
+            var res = await signInManager.PasswordSignInAsync(
+                loginDto.Email,
+                loginDto.Password,
+                loginDto.RememberMe,
+                false);
+
+            if (res.Succeeded)
+            {
+                return Redirect("/");
+            }
+            else
+            {
+                if (res.IsLockedOut)
+                {
+                    ModelState.AddModelError("Login", "You are locked out.");
+                }
+                else
+                {
+                    ModelState.AddModelError("Login", "Failed to login.");
+                }
+                return View(loginDto);
+            }
         }
     }
 }
