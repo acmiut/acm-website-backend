@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IUT_ACM_Solution.Controllers
 {
-    [Route("Account")]
+    [Route("account")]
     public class AccountController : Controller
     {
         private readonly UserManager<User> userManager;
@@ -51,5 +51,10 @@ namespace IUT_ACM_Solution.Controllers
             }
         }
 
+        [HttpGet("login")]
+        public IActionResult Login() => View();
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login();
     }
 }
