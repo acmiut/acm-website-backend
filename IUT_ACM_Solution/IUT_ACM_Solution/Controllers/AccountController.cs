@@ -9,10 +9,14 @@ namespace IUT_ACM_Solution.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<User> userManager;
+        private readonly SignInManager<User> signInManager;
 
-        public AccountController(UserManager<User> userManager)
+        public AccountController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
             this.userManager = userManager;
+            this.signInManager = signInManager;
         }
 
         [HttpGet("register")]
@@ -55,6 +59,11 @@ namespace IUT_ACM_Solution.Controllers
         public IActionResult Login() => View();
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login();
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            if (!ModelState.IsValid) return View(loginDto);
+
+            var res = 
+        }
     }
 }
