@@ -1,0 +1,72 @@
+﻿@model IUT_ACM_Solution.DTOs.RegisterDto
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FirstName"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StudentNumber"></label>
+        <input asp-for="StudentNumber" class="form-control" />
+        <span asp-validation-for="StudentNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EntryYear"></label>
+        <input asp-for="EntryYear" class="form-control" />
+        <span asp-validation-for="EntryYear" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EducationLevel"></label>
+        <select asp-for="EducationLevel" class="form-control" asp-items="Html.GetEnumSelectList<EducationLevel>()"></select>
+        <span asp-validation-for="EducationLevel" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="University"></label>
+        <input asp-for="University" class="form-control" />
+        <span asp-validation-for="University" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TelegramId"></label>
+        <input asp-for="TelegramId" class="form-control" />
+        <span asp-validation-for="TelegramId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
