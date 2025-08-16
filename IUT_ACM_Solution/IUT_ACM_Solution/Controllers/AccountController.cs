@@ -43,6 +43,7 @@ namespace IUT_ACM_Solution.Controllers
             var res = await userManager.CreateAsync(user, registerDto.Password);
             if (res.Succeeded)
             {
+                await userManager.AddToRoleAsync(user, "User");
                 return RedirectToAction("Login");
             }
             else
