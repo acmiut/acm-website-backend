@@ -41,6 +41,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Error/Forbidden";
 });
 
+builder.Services.AddAuthentication()
+    .AddGitHub(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"]??"";
+        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"]??"";
+        options.CallbackPath = "/signin-github";
+        options.Scope.Add("user:email");
+    });
+
 
 var app = builder.Build();
 
