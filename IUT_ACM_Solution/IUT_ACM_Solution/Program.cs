@@ -2,6 +2,8 @@ using IUT_ACM_Solution.Data;
 using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +50,17 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.EnsureCreated();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+    SeedData.SeedAdminUserAsync(userManager, roleManager).GetAwaiter().GetResult();
 }
 
 app.UseHttpsRedirection();
