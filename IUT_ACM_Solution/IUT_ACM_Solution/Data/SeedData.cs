@@ -41,7 +41,7 @@ namespace IUT_ACM_Solution.Data
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
 
-                    await userManager.AddToRoleAsync(adminUser, "Moderator");
+                    await userManager.AddToRoleAsync(adminUser, "SuperAdmin");
                 }
                 else
                 {
