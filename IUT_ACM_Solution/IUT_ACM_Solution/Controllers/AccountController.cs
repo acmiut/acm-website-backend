@@ -116,24 +116,64 @@ namespace IUT_ACM_Solution.Controllers
             var info = await signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
+                ModelState.AddModelError(string.Empty, "Error loading external login information.");
                 return RedirectToAction("Login");
             }
 
+            // Try to sign in with external login
             var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
             if (result.Succeeded)
             {
                 return Redirect(returnUrl ?? "/");
             }
 
-            // If the user does not have an account, create one
+            // Get email from external provider
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            var user = new User { UserName = email, Email = email, EmailConfirmed = true };
+            if (email == null)
+            {
+                ModelState.AddModelError(string.Empty, "Email not received from external provider.");
+                return RedirectToAction("Login");
+            }
 
-            var createResult = await userManager.CreateAsync(user);
+            // Check if a user with this email already exists
+            var existingUser = await userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                // Link external login to existing user
+                var linkResult = await userManager.AddLoginAsync(existingUser, info);
+                if (linkResult.Succeeded)
+                {
+                    await signInManager.SignInAsync(existingUser, isPersistent: false);
+                    return Redirect(returnUrl ?? "/");
+                }
+
+                foreach (var error in linkResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return RedirectToAction("Login");
+            }
+
+            // No user exists — create a new one
+            var newUser = new User
+            {
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true,
+                FirstName = "External", // You can customize this
+                LastName = "User",
+                EntryYear = DateTime.UtcNow.Year,
+                EducationLevel = EducationLevel.Undergraduate,
+                University = "Unknown"
+            };
+
+            var createResult = await userManager.CreateAsync(newUser);
             if (createResult.Succeeded)
             {
-                await userManager.AddLoginAsync(user, info);
-                await signInManager.SignInAsync(user, isPersistent: false);
+                await userManager.AddLoginAsync(newUser, info);
+                await userManager.AddToRoleAsync(newUser, "User");
+                await signInManager.SignInAsync(newUser, isPersistent: false);
                 return Redirect(returnUrl ?? "/");
             }
 
