@@ -91,7 +91,7 @@ namespace IUT_ACM_Solution.Controllers
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Login");
+            return Redirect("/Account/Login");
         }
     }
 }
