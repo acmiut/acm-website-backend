@@ -86,5 +86,12 @@ namespace IUT_ACM_Solution.Controllers
                 return View(loginDto);
             }
         }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
     }
 }
