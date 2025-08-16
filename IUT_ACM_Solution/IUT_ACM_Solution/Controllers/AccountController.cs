@@ -2,6 +2,7 @@
 using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IUT_ACM_Solution.Controllers
 {
@@ -93,6 +94,55 @@ namespace IUT_ACM_Solution.Controllers
         {
             await signInManager.SignOutAsync();
             return Redirect("/Account/Login");
+        }
+
+        [HttpPost("external-login")]
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet("external-login-callback")]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+                return RedirectToAction("Login");
+            }
+
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            if (result.Succeeded)
+            {
+                return Redirect(returnUrl ?? "/");
+            }
+
+            // If the user does not have an account, create one
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var user = new User { UserName = email, Email = email, EmailConfirmed = true };
+
+            var createResult = await userManager.CreateAsync(user);
+            if (createResult.Succeeded)
+            {
+                await userManager.AddLoginAsync(user, info);
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return Redirect(returnUrl ?? "/");
+            }
+
+            foreach (var error in createResult.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return RedirectToAction("Login");
         }
     }
 }
