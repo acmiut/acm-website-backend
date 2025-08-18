@@ -1,6 +1,7 @@
 ﻿using IUT_ACM_Solution.DTOs;
 using IUT_ACM_Solution.Interfaces;
 using IUT_ACM_Solution.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -195,7 +196,7 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpPost("external-login")]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        public IActionResult ExternalLogin(string provider, string returnUrl = "")
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
@@ -203,7 +204,7 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpGet("external-login-callback")]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "", string remoteError = "")
         {
             if (remoteError != null)
             {
@@ -282,5 +283,54 @@ namespace IUT_ACM_Solution.Controllers
 
             return RedirectToAction("Login");
         }
+
+        // [Authorize]
+        [HttpGet("user-profile")]
+        public async Task<IActionResult> UserProfile()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity?.Name??"");
+            if (user != null)
+            {
+                UserProfileDto userProfile = new UserProfileDto
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    StudentNumber = user.StudentNumber,
+                    EntryYear = user.EntryYear,
+                    EducationLevel = user.EducationLevel,
+                    University = user.University,
+                    TelegramId = user.TelegramId
+                };
+
+                return View(userProfile);
+            }
+            return NotFound();
+        }
+
+        [HttpPost("user-profile")]
+        public async Task<IActionResult> UserProfile(UserProfileDto userProfile)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByNameAsync(User.Identity?.Name ?? "");
+                if (user != null)
+                {
+                    user.FirstName = userProfile.FirstName;
+                    user.LastName = userProfile.LastName;
+                    user.StudentNumber = userProfile.StudentNumber;
+                    user.EntryYear = userProfile.EntryYear;
+                    user.University = userProfile.University;
+                    user.TelegramId = userProfile.TelegramId;
+
+                    var result = await userManager.UpdateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        ModelState.AddModelError("", "Error occured while updating the profile.");
+                    }
+                }
+            }
+            return View(userProfile);
+        }
+    
     }
 }
