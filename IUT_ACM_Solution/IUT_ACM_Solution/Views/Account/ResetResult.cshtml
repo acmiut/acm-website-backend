@@ -1,0 +1,15 @@
+﻿@model bool
+@{
+    ViewData["Title"] = "Password Reset Result";
+}
+
+@if (Model)
+{
+    <h2>Password Reset Successful</h2>
+    <p>Your password has been updated. You can now <a href="/account/login">log in</a> with your new credentials.</p>
+}
+else
+{
+    <h2>Password Reset Failed</h2>
+    <p>The reset link may be invalid or expired. Also, make sure your password is at least 8 digits including small, capital, and nonalphanumeric characters. Please try again or request a new one.</p>
+}

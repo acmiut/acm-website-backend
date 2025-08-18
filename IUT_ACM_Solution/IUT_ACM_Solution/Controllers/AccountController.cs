@@ -121,6 +121,72 @@ namespace IUT_ACM_Solution.Controllers
             }
         }
 
+        [HttpGet("forget-password")]
+        public async Task<IActionResult> ForgetPassword() => View();
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword(string Email)
+        {
+            var user = await userManager.FindByNameAsync(Email);
+
+            if (user != null)
+            {
+                var resetPasswordToken = await userManager.GeneratePasswordResetTokenAsync(user);
+
+                var resetLink = Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { userId = user.Id, token = resetPasswordToken },
+                    protocol: Request.Scheme
+                );
+
+                await emailService.SendAsync(
+                    user.Email??"",
+                    "Reset Password",
+                    $"Please click on this link to reset your password: {resetLink}");
+            }
+
+            return RedirectToAction("Login");
+
+        }
+
+        [HttpGet("reset-password")]
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            var model = new ResetPasswordDto { UserId = userId, Token = token };
+            return View(model);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (ModelState.IsValid)
+            {
+                if (resetPasswordDto.NewPassword == resetPasswordDto.ConfirmPassword)
+                {
+                    bool isTokenValid = false;
+
+                    var user = await userManager.FindByIdAsync(resetPasswordDto.UserId);
+                    if (user != null)
+                    {
+                        var result = await userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.NewPassword);
+                        if (result.Succeeded)
+                        {
+                            isTokenValid = true;
+                        }
+                    }
+                    return View("ResetResult", isTokenValid);
+
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Please confirm your password correctly.");
+                }
+            }
+
+            return View(resetPasswordDto);
+        }
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
