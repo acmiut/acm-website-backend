@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System;
+using IUT_ACM_Solution.Interfaces;
+using IUT_ACM_Solution.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
+
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
