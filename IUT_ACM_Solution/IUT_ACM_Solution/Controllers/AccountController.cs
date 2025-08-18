@@ -1,4 +1,5 @@
 ﻿using IUT_ACM_Solution.DTOs;
+using IUT_ACM_Solution.Interfaces;
 using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,16 @@ namespace IUT_ACM_Solution.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
+        private readonly IEmailService emailService;
 
         public AccountController(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IEmailService emailService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.emailService = emailService;
         }
 
         [HttpGet("register")]
@@ -45,7 +49,15 @@ namespace IUT_ACM_Solution.Controllers
             if (res.Succeeded)
             {
                 var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                return RedirectToAction("ConfirmEmail", "Account", new { userId = user.Id, token = confirmationToken });
+                var confirmationLink = Url.PageLink(pageName: "/Account/ConfirmEmail",
+                    values: new { userId = user.Id, token = confirmationToken })??"";
+
+                await emailService.SendAsync("shadikhansari1384@gmail.com",
+                    user.Email,
+                    "Please confirm your email",
+                    $"Please click on this link to confirm your email address: {confirmationLink}");
+
+                return RedirectToAction("Login");
             }
             else
             {
