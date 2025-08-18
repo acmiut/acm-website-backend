@@ -50,6 +50,8 @@ builder.Services.AddAuthentication()
         options.Scope.Add("user:email");
     });
 
+builder.Services.Configure<SmtpSetting>(
+    builder.Configuration.GetSection("SmtpSetting"));
 
 var app = builder.Build();
 
