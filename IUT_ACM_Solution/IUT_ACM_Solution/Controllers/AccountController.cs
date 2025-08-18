@@ -122,7 +122,7 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpGet("forget-password")]
-        public async Task<IActionResult> ForgetPassword() => View();
+        public IActionResult ForgetPassword() => View();
 
         [HttpPost("forget-password")]
         public async Task<IActionResult> ForgetPassword(string Email)
