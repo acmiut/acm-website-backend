@@ -14,9 +14,10 @@ namespace IUT_ACM_Solution.Services
         {
             this.smtpSetting = smtpSetting;
         }
-        public async Task SendAsync(string from, string to, string subject, string body)
+        public async Task SendAsync(string to, string subject, string body)
         {
-            var message = new MailMessage(from,
+            var message = new MailMessage(
+                smtpSetting.Value.SenderEmail,
                 to,
                 subject,
                 body);
@@ -27,6 +28,8 @@ namespace IUT_ACM_Solution.Services
                     smtpSetting.Value.Username,
                     smtpSetting.Value.Password
                     );
+
+                emailClient.EnableSsl = true;
 
                 await emailClient.SendMailAsync(message);
             }

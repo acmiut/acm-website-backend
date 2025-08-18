@@ -49,10 +49,14 @@ namespace IUT_ACM_Solution.Controllers
             if (res.Succeeded)
             {
                 var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                var confirmationLink = Url.PageLink(pageName: "/Account/ConfirmEmail",
-                    values: new { userId = user.Id, token = confirmationToken })??"";
+                var confirmationLink = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new { userId = user.Id, token = confirmationToken },
+                    protocol: Request.Scheme
+                );
 
-                await emailService.SendAsync("shadikhansari1384@gmail.com",
+                await emailService.SendAsync(
                     user.Email,
                     "Please confirm your email",
                     $"Please click on this link to confirm your email address: {confirmationLink}");
