@@ -57,6 +57,22 @@ namespace IUT_ACM_Solution.Controllers
             }
         }
 
+        [HttpGet("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            bool isEmailConfirmed = false;
+            var user = await this.userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var result = await this.userManager.ConfirmEmailAsync(user, token);
+                if (result.Succeeded)
+                {
+                    isEmailConfirmed = true;
+                }
+            }
+            return View(isEmailConfirmed);
+        }
+
         [HttpGet("login")]
         public IActionResult Login() => View();
 
