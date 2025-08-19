@@ -19,5 +19,10 @@ namespace IUT_ACM_Solution.Controllers
             return View(events);
         }
 
+        [HttpPost("add-event")]
+        public async Task<IActionResult> AddEvent()
+        {
+
+        }
     }
 }
