@@ -39,11 +39,7 @@ namespace IUT_ACM_Solution.Controllers
                 UserName = registerDto.Email,
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
-                StudentNumber = registerDto.StudentNumber,
-                EntryYear = registerDto.EntryYear,
-                EducationLevel = registerDto.EducationLevel,
-                University = registerDto.University,
-                TelegramId = registerDto.TelegramId
+                ContactNumber = registerDto.ContactNumber
             };
 
             var res = await userManager.CreateAsync(user, registerDto.Password);
