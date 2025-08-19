@@ -1,6 +1,7 @@
 ﻿using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace IUT_ACM_Solution.Data
 {
@@ -24,10 +25,15 @@ namespace IUT_ACM_Solution.Data
 
                 // Configure Sponsors as JSON column (EF Core 7+)
                 entity.Property(e => e.Sponsors)
-                    .HasConversion(
-                        v => string.Join(';', v),
-                        v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
-                    );
+                .HasConversion(
+                    v => string.Join(';', v),
+                    v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
+                )
+                .Metadata.SetValueComparer(new ValueComparer<List<string>>(
+                    (c1, c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()
+                ));
 
                 // Indexes for better query performance
                 entity.HasIndex(e => e.StartDate);
@@ -48,10 +54,15 @@ namespace IUT_ACM_Solution.Data
 
                 // Configure TeamMemberEmails as JSON
                 entity.Property(t => t.TeamMemberEmails)
-                    .HasConversion(
-                        v => string.Join(';', v),
-                        v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
-                    );
+                .HasConversion(
+                    v => string.Join(';', v),
+                    v => v.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList()
+                )
+                .Metadata.SetValueComparer(new ValueComparer<List<string>>(
+                    (c1, c2) => c1!.SequenceEqual(c2!),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()
+                ));
 
                 // Foreign key relationship
                 entity.HasOne(t => t.Event)
