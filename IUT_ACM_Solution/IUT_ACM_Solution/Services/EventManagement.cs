@@ -1,33 +1,40 @@
-﻿using IUT_ACM_Solution.Interfaces.Services;
+﻿using IUT_ACM_Solution.Interfaces.Repositories;
+using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
 
 namespace IUT_ACM_Solution.Services
 {
     public class EventManagement : IEventManagement
     {
-        public Task CreateEventAsync(Event @event)
+        private readonly IEventRepository eventRepository;
+
+        public EventManagement(IEventRepository eventRepository)
         {
-            throw new NotImplementedException();
+            this.eventRepository = eventRepository;
+        }
+        public async Task CreateEventAsync(Event @event)
+        {
+            await eventRepository.CreateEventAsync(@event);
         }
 
-        public Task DeleteEventAsync(Guid eventId)
+        public async Task DeleteEventAsync(Guid eventId)
         {
-            throw new NotImplementedException();
+            await eventRepository.DeleteEventAsync(@eventId);
         }
 
-        public Task<Event> GetEventByIdAsync(Guid id)
+        public async Task<Event> GetEventByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await eventRepository.GetEventByIdAsync(id);
         }
 
-        public Task<List<Event>> GetEventsAsync()
+        public async Task<List<Event>> GetEventsAsync()
         {
-            throw new NotImplementedException();
+            return await eventRepository.GetEventsAsync();
         }
 
-        public Task UpdateEventAsync(Guid eventId, Event @event)
+        public async Task UpdateEventAsync(Guid eventId, Event @event)
         {
-            throw new NotImplementedException();
+            await eventRepository.UpdateEventAsync(eventId, @event);
         }
     }
 }
