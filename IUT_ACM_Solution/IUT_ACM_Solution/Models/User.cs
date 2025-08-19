@@ -32,13 +32,10 @@ namespace IUT_ACM_Solution.Models
         [MaxLength(12)]
         public string StudentNumber {  get; set; } = string.Empty;
 
-        [Required]
         public int EntryYear { get; set; }
 
-        [Required]
         public EducationLevel EducationLevel { get; set; } = EducationLevel.Undergraduate;
 
-        [Required]
         [MaxLength(255)]
         public string? University { get; set; } = string.Empty;
 
