@@ -6,6 +6,7 @@ namespace IUT_ACM_Solution.Controllers
 {
     public class TeamController : Controller
     {
+        [HttpPost("register-event")]
         public IActionResult RegisterTeam(Guid eventId, TeamDto teamDto)
         {
             if (!ModelState.IsValid) return View(teamDto);
