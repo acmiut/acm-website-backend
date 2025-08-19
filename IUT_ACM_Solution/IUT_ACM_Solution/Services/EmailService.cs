@@ -1,8 +1,8 @@
-﻿using IUT_ACM_Solution.Interfaces;
-using IUT_ACM_Solution.Models;
+﻿using IUT_ACM_Solution.Models;
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Net;
+using IUT_ACM_Solution.Interfaces.Services;
 
 namespace IUT_ACM_Solution.Services
 {

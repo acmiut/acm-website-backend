@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System;
-using IUT_ACM_Solution.Interfaces;
 using IUT_ACM_Solution.Services;
+using IUT_ACM_Solution.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
