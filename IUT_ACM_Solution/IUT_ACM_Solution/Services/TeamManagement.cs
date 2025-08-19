@@ -1,38 +1,45 @@
-﻿using IUT_ACM_Solution.Interfaces.Services;
+﻿using IUT_ACM_Solution.Interfaces.Repositories;
+using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
 
 namespace IUT_ACM_Solution.Services
 {
     public class TeamManagement : ITeamManagement
     {
-        public Task CreateTeamAsync(Team team)
+        private readonly ITeamRepository teamRepository;
+
+        public TeamManagement(ITeamRepository teamRepository)
         {
-            throw new NotImplementedException();
+            this.teamRepository = teamRepository;
+        }
+        public async Task CreateTeamAsync(Team team)
+        {
+            await teamRepository.CreateTeamAsync(team);
         }
 
-        public Task DeleteTeamAsync(Guid teamId)
+        public async Task DeleteTeamAsync(Guid teamId)
         {
-            throw new NotImplementedException();
+            await teamRepository.DeleteTeamAsync(teamId);
         }
 
-        public Task<Team> GetTeamByIdAsync(Guid teamId)
+        public async Task<Team> GetTeamByIdAsync(Guid teamId)
         {
-            throw new NotImplementedException();
+            return await teamRepository.GetTeamByIdAsync(teamId);
         }
 
-        public Task<List<Team>> GetTeamsAsync()
+        public async Task<List<Team>> GetTeamsAsync()
         {
-            throw new NotImplementedException();
+            return await teamRepository.GetTeamsAsync();
         }
 
-        public Task<List<Team>> GetTeamsByEventAsync(Guid eventId)
+        public async Task<List<Team>> GetTeamsByEventAsync(Guid eventId)
         {
-            throw new NotImplementedException();
+            return await teamRepository.GetTeamsByEventAsync(eventId);
         }
 
-        public Task UpdateTeamAsync(Guid teamId, Team team)
+        public async Task UpdateTeamAsync(Guid teamId, Team team)
         {
-            throw new NotImplementedException();
+            await teamRepository.UpdateTeamAsync(teamId, team);
         }
     }
 }
