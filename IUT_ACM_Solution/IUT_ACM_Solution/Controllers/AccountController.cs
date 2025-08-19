@@ -192,7 +192,7 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpPost("external-login")]
-        public IActionResult ExternalLogin(string provider, string returnUrl = "")
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
@@ -200,7 +200,7 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpGet("external-login-callback")]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "", string remoteError = "")
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
