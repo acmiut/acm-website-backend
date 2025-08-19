@@ -26,11 +26,24 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpGet("register")]
-        public IActionResult Register() => View();
+        public IActionResult Register()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home"); 
+            }
+
+            return View();
+        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto registerDto)
         {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (!ModelState.IsValid)  return View(registerDto);
 
             var user = new User
@@ -87,11 +100,25 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpGet("login")]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
+
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (!ModelState.IsValid) return View(loginDto);
 
             var res = await signInManager.PasswordSignInAsync(
