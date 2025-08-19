@@ -177,6 +177,11 @@ namespace IUT_ACM_Solution.Controllers
         [HttpGet("reset-password")]
         public IActionResult ResetPassword(string userId, string token)
         {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("ForgetPassword");
+            }
+
             var model = new ResetPasswordDto { UserId = userId, Token = token };
             return View(model);
         }
