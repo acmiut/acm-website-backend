@@ -14,7 +14,7 @@ namespace IUT_ACM_Solution.DTOs
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public IFormFile? ImageUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [StringLength(300)]
         public string Location { get; set; } = string.Empty;
