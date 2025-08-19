@@ -3,20 +3,21 @@
     ViewData["Title"] = "Email Confirmation";
 }
 
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-body text-center">
-            @if (Model)
-            {
-                <h2 class="text-success">✅ Email Confirmed Successfully!</h2>
-                <p>Your email has been verified. You can now log in to your account.</p>
-                <a class="btn btn-primary" href="/Account/Login">Go to Login</a>
-            }
-            else
-            {
-                <h2 class="text-danger">❌ Email Confirmation Failed</h2>
-                <p>We couldn't verify your email. The link may be invalid or expired.</p>
-            }
+<div class="text-center my-5">
+    @if (Model)
+    {
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Email Confirmed Successfully! 🎉</h4>
+            <p>Thank you for confirming your email address. You can now log in to your account.</p>
         </div>
-    </div>
+        <a asp-action="Login" class="btn btn-primary mt-3">Go to Login Page</a>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Email Confirmation Failed 😥</h4>
+            <p>An error occurred while confirming your email. Please try again or contact support.</p>
+        </div>
+        <a asp-action="Login" class="btn btn-secondary mt-3">Back to Login</a>
+    }
 </div>

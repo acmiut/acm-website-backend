@@ -1,72 +1,66 @@
-﻿@model IUT_ACM_Solution.DTOs.RegisterDto
+﻿@using IUT_ACM_Solution.DTOs
+@model RegisterDto
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Sign Up";
 }
 
-<h2>Register</h2>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card my-5">
+            <div class="card-header text-center bg-primary text-white">
+                <h3 class="card-title">Sign Up</h3>
+            </div>
+            <div class="card-body p-4">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <form asp-action="Register" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="ContactNumber" class="form-label"></label>
+                        <input asp-for="ContactNumber" class="form-control" />
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Create Account</button>
+                    </div>
+                </form>
+                <div class="mt-4 text-center">
+                    Already have an account? <a asp-action="Login">Log In</a>
+                </div>
 
-<form asp-action="Register" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <hr class="my-4">
 
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+                <h5 class="text-center mb-3">Or use an external service to register</h5>
+                <div class="d-grid gap-2">
+                    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="GitHub" method="post">
+                        <button type="submit" class="btn btn-outline-dark w-100">
+                            <i class="fab fa-github"></i> Log in with GitHub
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="StudentNumber"></label>
-        <input asp-for="StudentNumber" class="form-control" />
-        <span asp-validation-for="StudentNumber" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="EntryYear"></label>
-        <input asp-for="EntryYear" class="form-control" />
-        <span asp-validation-for="EntryYear" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="EducationLevel"></label>
-        <select asp-for="EducationLevel" class="form-control" asp-items="Html.GetEnumSelectList<EducationLevel>()"></select>
-        <span asp-validation-for="EducationLevel" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="University"></label>
-        <input asp-for="University" class="form-control" />
-        <span asp-validation-for="University" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="TelegramId"></label>
-        <input asp-for="TelegramId" class="form-control" />
-        <span asp-validation-for="TelegramId" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Register</button>
-</form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

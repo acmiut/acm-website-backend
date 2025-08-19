@@ -34,6 +34,11 @@ namespace IUT_ACM_Solution.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ContactNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -102,7 +107,6 @@ namespace IUT_ACM_Solution.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("University")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
