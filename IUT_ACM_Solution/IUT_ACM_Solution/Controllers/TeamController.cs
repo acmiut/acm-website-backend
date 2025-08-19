@@ -4,9 +4,9 @@ namespace IUT_ACM_Solution.Controllers
 {
     public class TeamController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> RegisterTeam()
         {
-            return View();
+
         }
     }
 }
