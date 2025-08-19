@@ -262,6 +262,7 @@ namespace IUT_ACM_Solution.Controllers
                 EmailConfirmed = true,
                 FirstName = "External", // You can customize this
                 LastName = "User",
+                ContactNumber = "",
                 EntryYear = DateTime.UtcNow.Year,
                 EducationLevel = EducationLevel.Undergraduate,
                 University = "Unknown"
@@ -284,7 +285,6 @@ namespace IUT_ACM_Solution.Controllers
             return RedirectToAction("Login");
         }
 
-        // [Authorize]
         [HttpGet("user-profile")]
         public async Task<IActionResult> UserProfile()
         {
@@ -296,6 +296,7 @@ namespace IUT_ACM_Solution.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     StudentNumber = user.StudentNumber,
+                    ContactNumber = user.ContactNumber,
                     EntryYear = user.EntryYear,
                     EducationLevel = user.EducationLevel,
                     University = user.University,
@@ -317,6 +318,7 @@ namespace IUT_ACM_Solution.Controllers
                 {
                     user.FirstName = userProfile.FirstName;
                     user.LastName = userProfile.LastName;
+                    user.ContactNumber = userProfile.ContactNumber;
                     user.StudentNumber = userProfile.StudentNumber;
                     user.EntryYear = userProfile.EntryYear;
                     user.University = userProfile.University;
