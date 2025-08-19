@@ -17,8 +17,5 @@ namespace IUT_ACM_Solution.DTOs
         public bool HasPaid { get; set; } = false;
 
         public DateTime? RegisteredAt { get; set; } 
-
-        [Required(ErrorMessage = "Event ID is required.")]
-        public Guid EventId { get; set; }
     }
 }
