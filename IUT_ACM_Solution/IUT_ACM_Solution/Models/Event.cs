@@ -55,7 +55,7 @@ namespace IUT_ACM_Solution.Models
 
         // Navigation Properties
         public List<User> RegisteredUsers { get; set; } = new();
-        //public List<Team> ParticipatingTeams { get; set; } = new();
+        public List<Team> ParticipatingTeams { get; set; } = new();
     }
 
 }
