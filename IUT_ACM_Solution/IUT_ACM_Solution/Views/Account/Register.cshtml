@@ -1,0 +1,66 @@
+﻿@using IUT_ACM_Solution.DTOs
+@model RegisterDto
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card my-5">
+            <div class="card-header text-center bg-primary text-white">
+                <h3 class="card-title">Sign Up</h3>
+            </div>
+            <div class="card-body p-4">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <form asp-action="Register" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="ContactNumber" class="form-label"></label>
+                        <input asp-for="ContactNumber" class="form-control" />
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Create Account</button>
+                    </div>
+                </form>
+                <div class="mt-4 text-center">
+                    Already have an account? <a asp-action="Login">Log In</a>
+                </div>
+
+                <hr class="my-4">
+
+                <h5 class="text-center mb-3">Or use an external service to register</h5>
+                <div class="d-grid gap-2">
+                    <form asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="GitHub" method="post">
+                        <button type="submit" class="btn btn-outline-dark w-100">
+                            <i class="fab fa-github"></i> Log in with GitHub
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,23 @@
+﻿@model bool
+@{
+    ViewData["Title"] = "Email Confirmation";
+}
+
+<div class="text-center my-5">
+    @if (Model)
+    {
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Email Confirmed Successfully! 🎉</h4>
+            <p>Thank you for confirming your email address. You can now log in to your account.</p>
+        </div>
+        <a asp-action="Login" class="btn btn-primary mt-3">Go to Login Page</a>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Email Confirmation Failed 😥</h4>
+            <p>An error occurred while confirming your email. Please try again or contact support.</p>
+        </div>
+        <a asp-action="Login" class="btn btn-secondary mt-3">Back to Login</a>
+    }
+</div>

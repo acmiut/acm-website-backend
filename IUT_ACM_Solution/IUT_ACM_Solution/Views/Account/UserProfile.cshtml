@@ -1,0 +1,68 @@
+﻿@using IUT_ACM_Solution.DTOs
+@using IUT_ACM_Solution.Models
+@model UserProfileDto
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card my-5">
+            <div class="card-header text-center bg-info text-white">
+                <h3 class="card-title">User Profile</h3>
+            </div>
+            <div class="card-body p-4">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <form asp-action="UserProfile" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="FirstName" class="form-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="LastName" class="form-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="ContactNumber" class="form-label"></label>
+                        <input asp-for="ContactNumber" class="form-control" />
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="StudentNumber" class="form-label"></label>
+                        <input asp-for="StudentNumber" class="form-control" />
+                        <span asp-validation-for="StudentNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="EntryYear" class="form-label"></label>
+                        <input asp-for="EntryYear" class="form-control" />
+                        <span asp-validation-for="EntryYear" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="EducationLevel" class="form-label"></label>
+                        <select asp-for="EducationLevel" asp-items="Html.GetEnumSelectList<EducationLevel>()" class="form-control"></select>
+                        <span asp-validation-for="EducationLevel" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="University" class="form-label"></label>
+                        <input asp-for="University" class="form-control" />
+                        <span asp-validation-for="University" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label asp-for="TelegramId" class="form-label"></label>
+                        <input asp-for="TelegramId" class="form-control" />
+                        <span asp-validation-for="TelegramId" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-info text-white">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

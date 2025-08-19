@@ -1,0 +1,23 @@
+﻿@model bool
+@{
+    ViewData["Title"] = "Password Reset Result";
+}
+
+<div class="text-center my-5">
+    @if (Model)
+    {
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Password Reset Successful! 🎉</h4>
+            <p>Your password has been successfully reset. You can now use your new password to log in.</p>
+        </div>
+        <a asp-action="Login" class="btn btn-primary mt-3">Go to Login Page</a>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Password Reset Failed 😥</h4>
+            <p>An error occurred while trying to reset your password. The link may have expired or been used already.</p>
+        </div>
+        <a asp-action="Login" class="btn btn-secondary mt-3">Back to Login</a>
+    }
+</div>
