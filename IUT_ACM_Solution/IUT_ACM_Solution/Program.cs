@@ -6,6 +6,8 @@ using System.Data;
 using System;
 using IUT_ACM_Solution.Services;
 using IUT_ACM_Solution.Interfaces.Services;
+using IUT_ACM_Solution.Interfaces.Repositories;
+using IUT_ACM_Solution.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IEventManagement, EventManagement>();
+builder.Services.AddScoped<ITeamManagement, TeamManagement>();
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
