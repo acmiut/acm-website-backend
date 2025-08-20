@@ -61,6 +61,30 @@ namespace IUT_ACM_Solution.Controllers
             return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}");
         }
 
+        [HttpGet("complete-team-registeration")]
+        public async Task<IActionResult> CompleteTeamRegisteration(string authority, string status)
+        {
+            var team = await teamManagement.GetTeamByIdAsync(Guid.Parse(TempData["TeamId"].ToString()));
+            int amount = 0;
+
+            var verfication = await _payment.Verification(new DtoVerification()
+            {
+                Amount = amount,
+                Authority = authority,
+                MerchantId = ""
+            }, ZarinPal.Class.Payment.Mode.sandbox);
+
+            if (status == "OK")
+            {
+                team.HasPaid = true;
+                await teamManagement.UpdateTeamAsync(team.Id, team);
+                return View("Successful!");
+            }
+            else
+            {
+                return View(verfication.Status.ToString());
+            }
+        }
 
     }
 }
