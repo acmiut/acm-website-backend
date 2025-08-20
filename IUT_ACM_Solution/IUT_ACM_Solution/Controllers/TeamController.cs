@@ -11,18 +11,20 @@ namespace IUT_ACM_Solution.Controllers
     public class TeamController : Controller
     {
         private readonly IEventManagement eventManagement;
+        private readonly ITeamManagement teamManagement;
         private readonly UserManager<User> userManager;
         private Payment _payment;
         private Authority _authority;
         private Transactions _transactions;
 
-        public TeamController(IEventManagement eventManagement, UserManager<User> userManager)
+        public TeamController(IEventManagement eventManagement, ITeamManagement teamManagement, UserManager<User> userManager)
         {
             var expose = new Expose();
             _payment = expose.CreatePayment();
             _authority = expose.CreateAuthority();
             _transactions = expose.CreateTransactions();
             this.eventManagement = eventManagement;
+            this.teamManagement = teamManagement;
             this.userManager = userManager;
         }
         [HttpPost("register-event")]
@@ -37,6 +39,9 @@ namespace IUT_ACM_Solution.Controllers
                 EventId = eventId,
                 HasPaid = false
             };
+
+            await teamManagement.CreateTeamAsync(team);
+            TempData["TeamId"] = team.Id;
 
             var @event =await eventManagement.GetEventByIdAsync(eventId);
             int price = @event.BasePrice; // should add logic to apply discounts here or somewhere else
