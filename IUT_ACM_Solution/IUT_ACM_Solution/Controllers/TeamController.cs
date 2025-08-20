@@ -21,5 +21,7 @@ namespace IUT_ACM_Solution.Controllers
 
             return RedirectToAction("Payment", team);
         }
+
+
     }
 }
