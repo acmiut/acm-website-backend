@@ -63,9 +63,9 @@ namespace IUT_ACM_Solution.Models
 
         // Financials
         [Range(0, int.MaxValue)]
-        public int BasePrice { get; set; }
+        public int Fee { get; set; }
 
-        public bool IsFree => BasePrice <= 0;
+        public bool IsFree => Fee <= 0;
 
         // Organizers & Sponsors
         [StringLength(200)]

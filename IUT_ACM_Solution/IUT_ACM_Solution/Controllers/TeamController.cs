@@ -40,17 +40,18 @@ namespace IUT_ACM_Solution.Controllers
                 HasPaid = false
             };
 
+            // should add better logic to apply discounts here or somewhere else
+            var @event = await eventManagement.GetEventByIdAsync(eventId);
+            team.FeeToPay = @event.Fee; 
+
             await teamManagement.CreateTeamAsync(team);
             TempData["TeamId"] = team.Id;
-
-            var @event =await eventManagement.GetEventByIdAsync(eventId);
-            int price = @event.BasePrice; // should add logic to apply discounts here or somewhere else
 
             var user = await userManager.FindByEmailAsync(User.Identity?.Name ?? "");
 
             var req = await _payment.Request(new DtoRequest()
             {
-                Amount = @event.BasePrice,
+                Amount = team.FeeToPay,
                 CallbackUrl = "",
                 Description = @event.Title,
                 Email = User.Identity?.Name,
@@ -65,7 +66,7 @@ namespace IUT_ACM_Solution.Controllers
         public async Task<IActionResult> CompleteTeamRegisteration(string authority, string status)
         {
             var team = await teamManagement.GetTeamByIdAsync(Guid.Parse(TempData["TeamId"].ToString()));
-            int amount = 0;
+            int amount = team.FeeToPay;
 
             var verfication = await _payment.Verification(new DtoVerification()
             {

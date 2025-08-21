@@ -15,6 +15,8 @@ namespace IUT_ACM_Solution.Models
         public bool HasPaid { get; set; } = false;
         public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
 
+        public int FeeToPay;
+
         // Foreign Key
         [Required]
         public Guid EventId { get; set; }
