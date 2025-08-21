@@ -1,4 +1,5 @@
 ﻿using Dto.Payment;
+using Dto.Response.Payment;
 using IUT_ACM_Solution.DTOs;
 using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
@@ -73,27 +74,35 @@ namespace IUT_ACM_Solution.Controllers
         }
 
         [HttpGet("complete-team-registeration")]
-        public async Task<IActionResult> CompleteTeamRegisteration(string authority, string status)
+        public async Task<IActionResult> CompleteTeamRegisteration(Guid teamId, string authority, string status)
         {
-            var team = await teamManagement.GetTeamByIdAsync(Guid.Parse(TempData["TeamId"].ToString()));
-            int amount = team.FeeToPay;
-
-            var verfication = await _payment.Verification(new DtoVerification()
+            var team = await teamManagement.GetTeamByIdAsync(teamId);
+            if (team == null || team.Authority != authority)
             {
-                Amount = amount,
+                return RedirectToAction("PaymentFailed", new { message = "Invalid payment reference." });
+            }
+
+            if (status != "OK")
+            {
+                return RedirectToAction("PaymentFailed", new { message = "Payment was not successful." });
+            }
+
+            var verification = await _payment.Verification(new DtoVerification()
+            {
+                Amount = team.FeeToPay,
                 Authority = authority,
                 MerchantId = zarinPalOptions.Value.MerchantId
             }, ZarinPal.Class.Payment.Mode.sandbox);
 
-            if (status == "OK")
+            if (verification.Status == 100) 
             {
                 team.HasPaid = true;
                 await teamManagement.UpdateTeamAsync(team.Id, team);
-                return View("Successful!");
+                return RedirectToAction("PaymentSuccess", new { trackingCode = verification.RefId });
             }
             else
             {
-                return View(verfication.Status.ToString());
+                return RedirectToAction("PaymentFailed", new { message = "Payment verification failed." });
             }
         }
 
