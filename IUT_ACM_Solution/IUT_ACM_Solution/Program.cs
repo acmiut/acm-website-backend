@@ -65,6 +65,8 @@ builder.Services.AddAuthentication()
 
 builder.Services.Configure<SmtpSetting>(
     builder.Configuration.GetSection("SmtpSetting"));
+builder.Services.Configure<ZarinPalSetting>(
+    builder.Configuration.GetSection("ZarinPal"));
 
 var app = builder.Build();
 
