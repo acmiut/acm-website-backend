@@ -4,6 +4,7 @@ using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using ZarinPal.Class;
 
 namespace IUT_ACM_Solution.Controllers
@@ -13,11 +14,16 @@ namespace IUT_ACM_Solution.Controllers
         private readonly IEventManagement eventManagement;
         private readonly ITeamManagement teamManagement;
         private readonly UserManager<User> userManager;
+        private readonly IOptions<ZarinPalSetting> zarinPalOptions;
         private Payment _payment;
         private Authority _authority;
         private Transactions _transactions;
 
-        public TeamController(IEventManagement eventManagement, ITeamManagement teamManagement, UserManager<User> userManager)
+        public TeamController(
+            IEventManagement eventManagement, 
+            ITeamManagement teamManagement, 
+            UserManager<User> userManager,
+            IOptions<ZarinPalSetting> zarinPalOptions)
         {
             var expose = new Expose();
             _payment = expose.CreatePayment();
@@ -26,6 +32,7 @@ namespace IUT_ACM_Solution.Controllers
             this.eventManagement = eventManagement;
             this.teamManagement = teamManagement;
             this.userManager = userManager;
+            this.zarinPalOptions = zarinPalOptions;
         }
         [HttpPost("register-event")]
         public async Task<IActionResult> RegisterTeam(Guid eventId, TeamDto teamDto)
@@ -56,7 +63,7 @@ namespace IUT_ACM_Solution.Controllers
                 Description = @event.Title,
                 Email = User.Identity?.Name,
                 Mobile = user?.ContactNumber,
-                MerchantId = ""
+                MerchantId = zarinPalOptions.Value.MerchantId
             }, ZarinPal.Class.Payment.Mode.sandbox);
 
             return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}");
@@ -72,7 +79,7 @@ namespace IUT_ACM_Solution.Controllers
             {
                 Amount = amount,
                 Authority = authority,
-                MerchantId = ""
+                MerchantId = zarinPalOptions.Value.MerchantId
             }, ZarinPal.Class.Payment.Mode.sandbox);
 
             if (status == "OK")
