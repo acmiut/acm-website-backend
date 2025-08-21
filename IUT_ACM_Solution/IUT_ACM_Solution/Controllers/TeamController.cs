@@ -106,5 +106,13 @@ namespace IUT_ACM_Solution.Controllers
             }
         }
 
+        public IActionResult PaymentSuccess(string trackingCode)
+        {
+            return View("PaymentSuccess", trackingCode);
+        }
+        public IActionResult PaymentFailed(string message)
+        {
+            return View("PaymentFailed", message);
+        }
     }
 }
