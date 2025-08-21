@@ -39,32 +39,35 @@ namespace IUT_ACM_Solution.Controllers
         {
             if (!ModelState.IsValid) return View(teamDto);
 
+            var @event = await eventManagement.GetEventByIdAsync(eventId);
+            if (@event == null) return NotFound();
+
             var team = new Team
             {
                 TeamName = teamDto.TeamName,
                 TeamMemberEmails = teamDto.TeamMemberEmails,
                 EventId = eventId,
-                HasPaid = false
+                HasPaid = false,
+                FeeToPay = @event.Fee
             };
 
-            // should add better logic to apply discounts here or somewhere else
-            var @event = await eventManagement.GetEventByIdAsync(eventId);
-            team.FeeToPay = @event.Fee; 
-
             await teamManagement.CreateTeamAsync(team);
-            TempData["TeamId"] = team.Id;
 
             var user = await userManager.FindByEmailAsync(User.Identity?.Name ?? "");
+            var callbackUrl = Url.Action("CompleteTeamRegisteration", "Team", new { teamId = team.Id, eventId = eventId }, Request.Scheme);
 
             var req = await _payment.Request(new DtoRequest()
             {
                 Amount = team.FeeToPay,
-                CallbackUrl = "",
+                CallbackUrl = callbackUrl,
                 Description = @event.Title,
                 Email = User.Identity?.Name,
                 Mobile = user?.ContactNumber,
                 MerchantId = zarinPalOptions.Value.MerchantId
             }, ZarinPal.Class.Payment.Mode.sandbox);
+
+            team.Authority = req.Authority;
+            await teamManagement.UpdateTeamAsync(team.Id, team);
 
             return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}");
         }
