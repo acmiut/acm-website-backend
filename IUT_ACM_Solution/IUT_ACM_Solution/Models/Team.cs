@@ -16,6 +16,7 @@ namespace IUT_ACM_Solution.Models
         public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
 
         public int FeeToPay;
+        public string? Authority { get; set; }
 
         // Foreign Key
         [Required]
