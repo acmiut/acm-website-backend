@@ -1,0 +1,14 @@
+﻿@model IUT_ACM_Solution.Models.Team
+
+@{
+    ViewData["Title"] = "Team Details";
+}
+
+<h2>@Model.TeamName</h2>
+
+<p><strong>Members:</strong> @string.Join(", ", Model.TeamMemberEmails)</p>
+<p><strong>Paid:</strong> @(Model.HasPaid ? "Yes" : "No")</p>
+<p><strong>Registered At:</strong> @Model.RegisteredAt?.ToString("f")</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

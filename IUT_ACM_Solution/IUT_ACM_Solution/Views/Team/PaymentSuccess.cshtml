@@ -1,15 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Payment Success";
+﻿@model IUT_ACM_Solution.Models.Team
+
+@{
+    ViewData["Title"] = "Payment Successful";
 }
-@model string
 
-<h1>Payment Successful!</h1>
+<h2>Payment Successful</h2>
 
-<div class="alert alert-success">
-    <p>Your payment was successful. Your transaction tracking code is: <strong>@Model</strong></p>
-    <p>Thank you for registering for the event.</p>
-</div>
+<p>Your team <strong>@Model.TeamName</strong> has been registered successfully.</p>
+<p><strong>Tracking Code:</strong> @ViewBag.TrackingCode</p>
 
-<div>
-    <a asp-controller="Event" asp-action="Index">Back to Events</a>
-</div>
+<a asp-action="Index" class="btn btn-success">Back to Teams</a>

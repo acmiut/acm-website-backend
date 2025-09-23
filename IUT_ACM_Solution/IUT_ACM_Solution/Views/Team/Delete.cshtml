@@ -1,0 +1,16 @@
+﻿@model IUT_ACM_Solution.Models.Team
+
+@{
+    ViewData["Title"] = "Delete Team";
+}
+
+<h2>Delete Team</h2>
+
+<p>Are you sure you want to delete the team <strong>@Model.TeamName</strong>?</p>
+<p><strong>Members:</strong> @string.Join(", ", Model.TeamMemberEmails)</p>
+
+<form asp-action="DeleteConfirmed">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

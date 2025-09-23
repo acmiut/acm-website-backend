@@ -1,18 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Payment Failed";
 }
-@model string
 
-<h1>Payment Failed</h1>
+<h2>Payment Failed</h2>
 
-<div class="alert alert-danger">
-    <p>There was an issue processing your payment.</p>
-    @if (!string.IsNullOrEmpty(Model))
-    {
-        <p>Reason: @Model</p>
-    }
-</div>
+<p>@ViewBag.Message</p>
 
-<div>
-    <a asp-controller="Event" asp-action="Index">Back to Events</a>
-</div>
+<a asp-action="Index" class="btn btn-danger">Back to Teams</a>

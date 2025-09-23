@@ -1,0 +1,35 @@
+﻿@model IEnumerable<IUT_ACM_Solution.Models.Team>
+
+@{
+    ViewData["Title"] = "Teams";
+}
+
+<h2>Registered Teams</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Team Name</th>
+            <th>Members</th>
+            <th>Paid</th>
+            <th>Registered At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var team in Model)
+        {
+            <tr>
+                <td>@team.TeamName</td>
+                <td>@string.Join(", ", team.TeamMemberEmails)</td>
+                <td>@(team.HasPaid ? "Yes" : "No")</td>
+                <td>@team.RegisteredAt?.ToString("g")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@team.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@team.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@team.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
