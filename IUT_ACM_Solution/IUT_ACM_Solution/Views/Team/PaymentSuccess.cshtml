@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Payment Success";
+}
+@model string
+
+<h1>Payment Successful!</h1>
+
+<div class="alert alert-success">
+    <p>Your payment was successful. Your transaction tracking code is: <strong>@Model</strong></p>
+    <p>Thank you for registering for the event.</p>
+</div>
+
+<div>
+    <a asp-controller="Event" asp-action="Index">Back to Events</a>
+</div>
