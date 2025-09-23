@@ -101,7 +101,13 @@ namespace IUT_ACM_Solution.Controllers
             return RedirectToAction("Index", "Event");
         }
 
-        [HttpPut("update-event")]
+        [HttpGet("update-event")]
+        public async Task<IActionResult> UpdateEvent(Guid eventId)
+        {
+            return View(eventId);
+        }
+
+        [HttpPost("update-event")]
         public async Task<IActionResult> UpdateEvent(Guid eventId, [FromForm] EventDto eventDto)
         {
             if (!ModelState.IsValid)
