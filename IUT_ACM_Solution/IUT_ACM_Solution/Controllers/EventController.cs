@@ -21,6 +21,12 @@ namespace IUT_ACM_Solution.Controllers
             return View(events);
         }
 
+        [HttpGet("add-event")]
+        public async Task<IActionResult> AddEvent()
+        {
+            return View();
+        }
+
         [HttpPost("add-event")]
         public async Task<IActionResult> AddEvent([FromForm] EventDto eventDto)
         {
