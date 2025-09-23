@@ -143,7 +143,7 @@ namespace IUT_ACM_Solution.Controllers
             return RedirectToAction("Details", new { id = eventId });
         }
         
-        [HttpGet("update-event")]    
+        [HttpGet("get-events")]    
         
         public async Task<IActionResult> GetAllEvents()
         {
@@ -154,6 +154,21 @@ namespace IUT_ACM_Solution.Controllers
             }
             catch (Exception ex)
             { 
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("get-event/{eventId}")]
+        public async Task<IActionResult> GetEventById([FromRoute] Guid eventId)
+        {
+            try
+            {
+                var @event = await eventManagement.GetEventByIdAsync(eventId);
+                if (@event == null) return NotFound();
+                return View(@event);
+            }
+            catch (Exception ex)
+            {
                 return StatusCode(500, "Internal server error");
             }
         }
