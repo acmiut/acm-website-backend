@@ -36,6 +36,13 @@ namespace IUT_ACM_Solution.Controllers
             this.userManager = userManager;
             this.zarinPalOptions = zarinPalOptions;
         }
+
+        [HttpGet("register-event")]
+        public async Task<IActionResult> RegisterTeam(Guid eventId)
+        {
+            return View(eventId);
+        }
+
         [HttpPost("register-event")]
         public async Task<IActionResult> RegisterTeam(Guid eventId, TeamDto teamDto)
         {
@@ -105,6 +112,12 @@ namespace IUT_ACM_Solution.Controllers
             {
                 return RedirectToAction("PaymentFailed", new { message = "Payment verification failed." });
             }
+        }
+
+        [HttpPut("update-team")]
+        public async Task<IActionResult> UpdateTeam(Guid eventId, Guid teamId)
+        {
+            return View(new {eventId, teamId});
         }
 
         [HttpPut("update-team")]
