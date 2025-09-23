@@ -77,7 +77,7 @@ namespace IUT_ACM_Solution.Controllers
                 IsTeamBased = eventDto.IsTeamBased,
                 MaxTeamMembers = eventDto.MaxTeamMembers,
                 RequiresRegistration = eventDto.RequiresRegistration,
-                BasePrice = eventDto.BasePrice,
+                BasePrice = eventDto.Fee,
                 OrganizedBy = eventDto.OrganizedBy,
                 CreatedAt = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
@@ -94,6 +94,52 @@ namespace IUT_ACM_Solution.Controllers
 
             return RedirectToAction("Index", "Event");
         }
-    
+
+        public async Task<IActionResult> UpdateEvent(Guid eventId, [FromForm] EventDto eventDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(eventDto);
+            }
+
+            var @event = await eventManagement.GetEventByIdAsync(eventId);
+            if (@event == null)
+            {
+                ModelState.AddModelError("", "Event not found.");
+                return View(eventDto);
+            }
+
+            @event.Title = eventDto.Title;
+            @event.Description = eventDto.Description;
+
+            if (eventDto.ImageFile != null && eventDto.ImageFile.Length > 0)
+            {
+                var fileName = $"{Guid.NewGuid()}_{eventDto.ImageFile.FileName}";
+                var filePath = Path.Combine("wwwroot/images/events", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await eventDto.ImageFile.CopyToAsync(stream);
+                }
+
+                @event.ImageUrl = $"/images/events/{fileName}";
+            }
+
+            @event.Location = eventDto.Location;
+            @event.StartDate = eventDto.StartDate;
+            @event.EndDate = eventDto.EndDate;
+            @event.EventType = eventDto.EventType;
+            @event.Status = eventDto.Status;
+            @event.Capacity = eventDto.Capacity;
+            @event.IsTeamBased = eventDto.IsTeamBased;
+            @event.MaxTeamMembers = eventDto.MaxTeamMembers;
+            @event.RequiresRegistration = eventDto.RequiresRegistration;
+            @event.Fee = eventDto.Fee; 
+            @event.OrganizedBy = eventDto.OrganizedBy;
+
+            await eventManagement.UpdateEventAsync(eventId, @event);
+
+            return RedirectToAction("Details", new { id = eventId });
+        }
     }
 }

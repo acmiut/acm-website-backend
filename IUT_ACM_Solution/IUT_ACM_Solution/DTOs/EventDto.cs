@@ -39,7 +39,7 @@ namespace IUT_ACM_Solution.DTOs
         public bool RequiresRegistration { get; set; } = true;
 
         [Range(0, int.MaxValue)]
-        public int BasePrice { get; set; }
+        public float Fee { get; set; }
 
         [StringLength(200)]
         public string OrganizedBy { get; set; } = "ACM Chapter";
