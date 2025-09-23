@@ -136,6 +136,23 @@ namespace IUT_ACM_Solution.Controllers
             }
         }
 
+        [HttpDelete("delete-team")]
+        public async Task<IActionResult> DeleteTeam(Guid teamId)
+        {
+            try
+            {
+                var team = await teamManagement.GetTeamByIdAsync(teamId);
+                if (team == null) return BadRequest();
+
+                await teamManagement.DeleteTeamAsync(teamId);
+                return RedirectToAction("/");
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         public IActionResult PaymentSuccess(string trackingCode)
         {
             return View("PaymentSuccess", trackingCode);
