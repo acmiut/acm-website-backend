@@ -95,6 +95,7 @@ namespace IUT_ACM_Solution.Controllers
             return RedirectToAction("Index", "Event");
         }
 
+        [HttpPut("update-event")]
         public async Task<IActionResult> UpdateEvent(Guid eventId, [FromForm] EventDto eventDto)
         {
             if (!ModelState.IsValid)
@@ -140,6 +141,21 @@ namespace IUT_ACM_Solution.Controllers
             await eventManagement.UpdateEventAsync(eventId, @event);
 
             return RedirectToAction("Details", new { id = eventId });
+        }
+        
+        [HttpGet("update-event")]    
+        
+        public async Task<IActionResult> GetAllEvents()
+        {
+            try
+            {
+                var events = await eventManagement.GetEventsAsync();
+                return View(events);
+            }
+            catch (Exception ex)
+            { 
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
