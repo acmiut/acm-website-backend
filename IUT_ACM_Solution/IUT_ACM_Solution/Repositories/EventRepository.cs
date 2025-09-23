@@ -95,7 +95,7 @@ namespace IUT_ACM_Solution.Repositories
                 _event.IsTeamBased = @event.IsTeamBased;
                 _event.MaxTeamMembers = @event.MaxTeamMembers;
                 _event.RequiresRegistration = @event.RequiresRegistration;
-                _event.BasePrice = @event.BasePrice;
+                _event.Fee = @event.Fee;
                 _event.OrganizedBy = @event.OrganizedBy;
                 _event.Sponsors = @event.Sponsors;
 

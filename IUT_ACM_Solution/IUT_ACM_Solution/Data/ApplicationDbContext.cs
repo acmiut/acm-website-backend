@@ -43,7 +43,7 @@ namespace IUT_ACM_Solution.Data
                 // Check constraints
                 entity.HasCheckConstraint("CK_Event_DateRange", "[EndDate] > [StartDate]");
                 entity.HasCheckConstraint("CK_Event_Capacity", "[Capacity] > 0");
-                entity.HasCheckConstraint("CK_Event_BasePrice", "[BasePrice] >= 0");
+                entity.HasCheckConstraint("CK_Event_Fee", "[Fee] >= 0");
                 entity.HasCheckConstraint("CK_Event_CurrentParticipants", "[CurrentParticipants] >= 0");
             });
 

@@ -77,7 +77,7 @@ namespace IUT_ACM_Solution.Controllers
                 IsTeamBased = eventDto.IsTeamBased,
                 MaxTeamMembers = eventDto.MaxTeamMembers,
                 RequiresRegistration = eventDto.RequiresRegistration,
-                BasePrice = eventDto.Fee,
+                Fee = eventDto.Fee,
                 OrganizedBy = eventDto.OrganizedBy,
                 CreatedAt = DateTime.UtcNow,
                 LastUpdated = DateTime.UtcNow
