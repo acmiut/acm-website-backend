@@ -66,6 +66,7 @@ namespace IUT_ACM_Solution.Models
         public int Fee { get; set; }
 
         public bool IsFree => Fee <= 0;
+        public float BasePrice {  get; set; }
 
         // Organizers & Sponsors
         [StringLength(200)]
