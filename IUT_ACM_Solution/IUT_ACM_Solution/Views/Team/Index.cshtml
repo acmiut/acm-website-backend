@@ -23,7 +23,7 @@
                 <td>@team.TeamName</td>
                 <td>@string.Join(", ", team.TeamMemberEmails)</td>
                 <td>@(team.HasPaid ? "Yes" : "No")</td>
-                <td>@team.RegisteredAt?.ToString("g")</td>
+                <td>@team.RegisteredAt.ToString("g")</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@team.Id">Details</a> |
                     <a asp-action="Edit" asp-route-id="@team.Id">Edit</a> |
