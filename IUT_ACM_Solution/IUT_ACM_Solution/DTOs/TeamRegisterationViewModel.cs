@@ -1,6 +1,6 @@
 ﻿namespace IUT_ACM_Solution.DTOs
 {
-    public class TeamRegisterationDto
+    public class TeamRegisterationViewModel
     {
         public Guid EventId { get; set; }
         public string EventTitle { get; set; } = string.Empty;

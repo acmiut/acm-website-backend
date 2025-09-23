@@ -63,8 +63,7 @@ namespace IUT_ACM_Solution.Controllers
                 return NotFound();
             }
 
-            ViewBag.Event = @event;
-            return View(new TeamDto());
+            var 
         }
 
         // POST: /Team/Register/{eventId}
