@@ -3,6 +3,7 @@ using Dto.Response.Payment;
 using IUT_ACM_Solution.DTOs;
 using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
+using IUT_ACM_Solution.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -103,6 +104,35 @@ namespace IUT_ACM_Solution.Controllers
             else
             {
                 return RedirectToAction("PaymentFailed", new { message = "Payment verification failed." });
+            }
+        }
+
+        [HttpPut("update-team")]
+        public async Task<IActionResult> UpdateTeam(Guid eventId, Guid teamId, TeamDto teamDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid) return View(teamDto);
+
+                var @event = await eventManagement.GetEventByIdAsync(eventId);
+                if (@event == null) return View(teamDto);
+
+                var team = await teamManagement.GetTeamByIdAsync(teamId);
+                if (team == null) return View(teamDto);
+
+                if (team.EventId != eventId) return BadRequest();
+
+
+                // check the update is valid (in case of uniqness of the team name and rules about the members)
+                team.TeamName = teamDto.TeamName;
+                team.TeamMemberEmails = teamDto.TeamMemberEmails;
+
+                await teamManagement.UpdateTeamAsync(teamId, team);
+                return RedirectToAction("");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
             }
         }
 
