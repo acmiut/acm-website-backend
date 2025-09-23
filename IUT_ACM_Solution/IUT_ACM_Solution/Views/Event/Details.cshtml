@@ -1,0 +1,25 @@
+﻿@model IUT_ACM_Solution.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<h2>@Model.Title</h2>
+
+<img src="@Model.ImageUrl" alt="Event Image" class="img-fluid mb-3" />
+
+<p><strong>Description:</strong> @Model.Description</p>
+<p><strong>Location:</strong> @Model.Location</p>
+<p><strong>Start:</strong> @Model.StartDate</p>
+<p><strong>End:</strong> @Model.EndDate</p>
+<p><strong>Type:</strong> @Model.EventType</p>
+<p><strong>Status:</strong> @Model.Status</p>
+<p><strong>Capacity:</strong> @Model.Capacity</p>
+<p><strong>Team Based:</strong> @(Model.IsTeamBased ? "Yes" : "No")</p>
+<p><strong>Max Team Members:</strong> @Model.MaxTeamMembers</p>
+<p><strong>Requires Registration:</strong> @(Model.RequiresRegistration ? "Yes" : "No")</p>
+<p><strong>Fee:</strong> @Model.Fee</p>
+<p><strong>Organized By:</strong> @Model.OrganizedBy</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
