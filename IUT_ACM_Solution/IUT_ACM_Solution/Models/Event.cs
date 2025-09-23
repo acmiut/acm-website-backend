@@ -63,7 +63,7 @@ namespace IUT_ACM_Solution.Models
 
         // Financials
         [Range(0, int.MaxValue)]
-        public float Fee { get; set; }
+        public int Fee { get; set; }
 
         public bool IsFree => Fee <= 0;
         public float BasePrice {  get; set; }
