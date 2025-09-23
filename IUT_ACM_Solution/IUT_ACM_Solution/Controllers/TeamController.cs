@@ -11,6 +11,7 @@ using ZarinPal.Class;
 
 namespace IUT_ACM_Solution.Controllers
 {
+    [Route("team")]
     public class TeamController : Controller
     {
         private readonly IEventManagement eventManagement;

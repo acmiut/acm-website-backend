@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IUT_ACM_Solution.Controllers
 {
 
-    [Route("events")]
+    [Route("event")]
     public class EventController : Controller
     {
         private readonly IEventManagement eventManagement;
