@@ -63,20 +63,27 @@ namespace IUT_ACM_Solution.Controllers
                 return NotFound();
             }
 
-            var 
+            var viewModel = new TeamRegisterationViewModel
+            {
+                EventId = @event.Id,
+                EventTitle = @event.Title,
+                Fee = @event.Fee
+            };
+
+            return View(viewModel);
         }
 
         // POST: /Team/Register/{eventId}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(Guid eventId, TeamDto teamDto)
+        public async Task<IActionResult> Register(TeamRegisterationViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(teamDto);
+                return View(model);
             }
 
-            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            var @event = await _eventManagement.GetEventByIdAsync(model.EventId);
             if (@event == null)
             {
                 return NotFound("Event not found.");
@@ -84,9 +91,9 @@ namespace IUT_ACM_Solution.Controllers
 
             var team = new Team
             {
-                TeamName = teamDto.TeamName,
-                TeamMemberEmails = teamDto.TeamMemberEmails,
-                EventId = eventId,
+                TeamName = model.Team.TeamName,
+                TeamMemberEmails = model.Team.TeamMemberEmails,
+                EventId = model.EventId,
                 HasPaid = false,
                 FeeToPay = @event.Fee
             };
@@ -94,7 +101,7 @@ namespace IUT_ACM_Solution.Controllers
             await _teamManagement.CreateTeamAsync(team);
 
             var user = await _userManager.FindByEmailAsync(User.Identity?.Name ?? "");
-            var callbackUrl = Url.Action("CompleteRegistration", "Team", new { teamId = team.Id, eventId = eventId }, Request.Scheme);
+            var callbackUrl = Url.Action("CompleteRegistration", "Team", new { teamId = team.Id, eventId = model.EventId }, Request.Scheme);
 
             var req = await _payment.Request(new DtoRequest()
             {
@@ -109,10 +116,8 @@ namespace IUT_ACM_Solution.Controllers
             team.Authority = req.Authority;
             await _teamManagement.UpdateTeamAsync(team.Id, team);
 
-            // Instead of returning JSON, redirect user to payment page
             return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}");
         }
-
         // GET: /Team/CompleteRegistration
         public async Task<IActionResult> CompleteRegistration(Guid teamId, string authority, string status)
         {
