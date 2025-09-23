@@ -3,7 +3,6 @@ using Dto.Response.Payment;
 using IUT_ACM_Solution.DTOs;
 using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
-using IUT_ACM_Solution.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -11,9 +10,7 @@ using ZarinPal.Class;
 
 namespace IUT_ACM_Solution.Controllers
 {
-    [Route("api/teams")]
-    [ApiController]
-    public class TeamController : ControllerBase
+    public class TeamController : Controller
     {
         private readonly IEventManagement _eventManagement;
         private readonly ITeamManagement _teamManagement;
@@ -39,21 +36,45 @@ namespace IUT_ACM_Solution.Controllers
             _zarinPalOptions = zarinPalOptions;
         }
 
-        // GET: api/teams
-        [HttpGet]
-        public async Task<IActionResult> GetTeams()
+        // GET: /Team
+        public async Task<IActionResult> Index()
         {
             var teams = await _teamManagement.GetTeamsAsync();
-            return Ok(teams);
+            return View(teams);
         }
 
-        // POST: api/teams/register/{eventId}
-        [HttpPost("register/{eventId}")]
-        public async Task<IActionResult> RegisterTeam(Guid eventId, [FromBody] TeamDto teamDto)
+        // GET: /Team/Details/{id}
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var team = await _teamManagement.GetTeamByIdAsync(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+            return View(team);
+        }
+
+        // GET: /Team/Register/{eventId}
+        public async Task<IActionResult> Register(Guid eventId)
+        {
+            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Event = @event;
+            return View(new TeamDto());
+        }
+
+        // POST: /Team/Register/{eventId}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(Guid eventId, TeamDto teamDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return View(teamDto);
             }
 
             var @event = await _eventManagement.GetEventByIdAsync(eventId);
@@ -74,42 +95,39 @@ namespace IUT_ACM_Solution.Controllers
             await _teamManagement.CreateTeamAsync(team);
 
             var user = await _userManager.FindByEmailAsync(User.Identity?.Name ?? "");
-            var callbackUrl = Url.Action("CompleteTeamRegisteration", "Team", new { teamId = team.Id, eventId = eventId }, Request.Scheme);
-            if (callbackUrl == null)
-            {
-                // This could happen if the route isn't configured correctly.
-                return StatusCode(500, "Could not generate callback URL.");
-            }
+            var callbackUrl = Url.Action("CompleteRegistration", "Team", new { teamId = team.Id, eventId = eventId }, Request.Scheme);
 
             var req = await _payment.Request(new DtoRequest()
             {
                 Amount = team.FeeToPay,
-                CallbackUrl = callbackUrl,
+                CallbackUrl = callbackUrl!,
                 Description = @event.Title,
                 Email = User.Identity?.Name,
                 Mobile = user?.ContactNumber,
                 MerchantId = _zarinPalOptions.Value.MerchantId
-            }, ZarinPal.Class.Payment.Mode.sandbox);
+            }, Payment.Mode.sandbox);
 
             team.Authority = req.Authority;
             await _teamManagement.UpdateTeamAsync(team.Id, team);
 
-            return Ok(new { paymentUrl = $"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}" });
+            // Instead of returning JSON, redirect user to payment page
+            return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}");
         }
 
-        // GET: api/teams/complete-registration
-        [HttpGet("complete-registration")]
-        public async Task<IActionResult> CompleteTeamRegistration(Guid teamId, string authority, string status)
+        // GET: /Team/CompleteRegistration
+        public async Task<IActionResult> CompleteRegistration(Guid teamId, string authority, string status)
         {
             var team = await _teamManagement.GetTeamByIdAsync(teamId);
             if (team == null || team.Authority != authority)
             {
-                return BadRequest(new { message = "Invalid payment reference." });
+                ViewBag.Message = "Invalid payment reference.";
+                return View("PaymentFailed");
             }
 
             if (status != "OK")
             {
-                return BadRequest(new { message = "Payment was not successful." });
+                ViewBag.Message = "Payment was not successful.";
+                return View("PaymentFailed");
             }
 
             var verification = await _payment.Verification(new DtoVerification()
@@ -117,85 +135,81 @@ namespace IUT_ACM_Solution.Controllers
                 Amount = team.FeeToPay,
                 Authority = authority,
                 MerchantId = _zarinPalOptions.Value.MerchantId
-            }, ZarinPal.Class.Payment.Mode.sandbox);
+            }, Payment.Mode.sandbox);
 
             if (verification.Status == 100)
             {
                 team.HasPaid = true;
                 await _teamManagement.UpdateTeamAsync(team.Id, team);
-                return Ok(new { trackingCode = verification.RefId, message = "Payment successful." });
+                ViewBag.TrackingCode = verification.RefId;
+                return View("PaymentSuccess", team);
             }
             else
             {
-                return BadRequest(new { message = "Payment verification failed." });
+                ViewBag.Message = "Payment verification failed.";
+                return View("PaymentFailed");
             }
         }
 
-        // GET: api/teams/{teamId}
-        [HttpGet("{teamId}")]
-        public async Task<IActionResult> GetTeamById(Guid teamId)
+        // GET: /Team/Edit/{id}
+        public async Task<IActionResult> Edit(Guid id)
         {
-            var team = await _teamManagement.GetTeamByIdAsync(teamId);
+            var team = await _teamManagement.GetTeamByIdAsync(id);
             if (team == null)
             {
                 return NotFound();
             }
-            return Ok(team);
+
+            var dto = new TeamDto
+            {
+                TeamName = team.TeamName,
+                TeamMemberEmails = team.TeamMemberEmails
+            };
+
+            return View(dto);
         }
 
-        // PUT: api/teams/{teamId}
-        [HttpPut("{teamId}")]
-        public async Task<IActionResult> UpdateTeam(Guid teamId, [FromBody] TeamDto teamDto)
+        // POST: /Team/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, TeamDto teamDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return View(teamDto);
             }
 
-            var team = await _teamManagement.GetTeamByIdAsync(teamId);
+            var team = await _teamManagement.GetTeamByIdAsync(id);
             if (team == null)
             {
                 return NotFound();
             }
-
-            // Check if the update is valid (e.g., uniqueness of team name, rules about members)
-            // This logic is missing in the original and should be implemented in teamManagement.
 
             team.TeamName = teamDto.TeamName;
             team.TeamMemberEmails = teamDto.TeamMemberEmails;
 
-            try
-            {
-                await _teamManagement.UpdateTeamAsync(teamId, team);
-                return NoContent(); // 204 No Content is standard for successful updates
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                return StatusCode(500, "Internal server error");
-            }
+            await _teamManagement.UpdateTeamAsync(id, team);
+            return RedirectToAction(nameof(Index));
         }
 
-        // DELETE: api/teams/{teamId}
-        [HttpDelete("{teamId}")]
-        public async Task<IActionResult> DeleteTeam(Guid teamId)
+        // GET: /Team/Delete/{id}
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var team = await _teamManagement.GetTeamByIdAsync(teamId);
+            var team = await _teamManagement.GetTeamByIdAsync(id);
             if (team == null)
             {
                 return NotFound();
             }
+            return View(team);
+        }
 
-            try
-            {
-                await _teamManagement.DeleteTeamAsync(teamId);
-                return NoContent(); // 204 No Content is standard for successful deletions
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                return StatusCode(500, "Internal server error");
-            }
+        // POST: /Team/Delete/{id}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            await _teamManagement.DeleteTeamAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

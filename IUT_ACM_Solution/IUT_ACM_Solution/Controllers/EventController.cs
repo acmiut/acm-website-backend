@@ -6,10 +6,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IUT_ACM_Solution.Controllers
 {
-
-    [Route("api/events")]
-    [ApiController]
-    public class EventController : ControllerBase
+    public class EventController : Controller
     {
         private readonly IEventManagement _eventManagement;
 
@@ -18,49 +15,44 @@ namespace IUT_ACM_Solution.Controllers
             _eventManagement = eventManagement;
         }
 
-        // GET: api/events
-        [HttpGet]
-        public async Task<IActionResult> GetAllEvents()
+        // GET: /Event
+        public async Task<IActionResult> Index()
         {
-            try
-            {
-                var events = await _eventManagement.GetEventsAsync();
-                return Ok(events);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception details
-                // logger.LogError(ex, "Failed to retrieve events.");
-                return StatusCode(500, "Internal server error");
-            }
+            var events = await _eventManagement.GetEventsAsync();
+            return View(events);
         }
 
-        // GET: api/events/{eventId}
-        [HttpGet("{eventId}")]
-        public async Task<IActionResult> GetEventById([FromRoute] Guid eventId)
+        // GET: /Event/Details/{id}
+        public async Task<IActionResult> Details(Guid id)
         {
-            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            var @event = await _eventManagement.GetEventByIdAsync(id);
             if (@event == null)
             {
                 return NotFound();
             }
-
-            return Ok(@event);
+            return View(@event);
         }
 
-        // POST: api/events
+        // GET: /Event/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: /Event/Create
         [HttpPost]
-        public async Task<IActionResult> CreateEvent([FromForm] EventDto eventDto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(EventDto eventDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return View(eventDto);
             }
 
             var imageUrl = await HandleImageUpload(eventDto.ImageFile, ModelState);
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return View(eventDto);
             }
 
             var @event = new Event
@@ -83,28 +75,50 @@ namespace IUT_ACM_Solution.Controllers
                 LastUpdated = DateTime.UtcNow
             };
 
-            try
-            {
-                await _eventManagement.CreateEventAsync(@event);
-                return CreatedAtAction(nameof(GetEventById), new { eventId = @event.Id }, @event);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                return StatusCode(500, "Internal server error");
-            }
+            await _eventManagement.CreateEventAsync(@event);
+            return RedirectToAction(nameof(Index));
         }
 
-        // PUT: api/events/{eventId}
-        [HttpPut("{eventId}")]
-        public async Task<IActionResult> UpdateEvent([FromRoute] Guid eventId, [FromForm] EventDto eventDto)
+        // GET: /Event/Edit/{id}
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var @event = await _eventManagement.GetEventByIdAsync(id);
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            var dto = new EventDto
+            {
+                Title = @event.Title,
+                Description = @event.Description,
+                Location = @event.Location,
+                StartDate = @event.StartDate,
+                EndDate = @event.EndDate,
+                EventType = @event.EventType,
+                Status = @event.Status,
+                Capacity = @event.Capacity,
+                IsTeamBased = @event.IsTeamBased,
+                MaxTeamMembers = @event.MaxTeamMembers,
+                RequiresRegistration = @event.RequiresRegistration,
+                Fee = @event.Fee,
+                OrganizedBy = @event.OrganizedBy
+            };
+
+            return View(dto);
+        }
+
+        // POST: /Event/Edit/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, EventDto eventDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return View(eventDto);
             }
 
-            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            var @event = await _eventManagement.GetEventByIdAsync(id);
             if (@event == null)
             {
                 return NotFound();
@@ -118,7 +132,7 @@ namespace IUT_ACM_Solution.Controllers
                 @event.ImageUrl = await HandleImageUpload(eventDto.ImageFile, ModelState);
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    return View(eventDto);
                 }
             }
 
@@ -135,38 +149,28 @@ namespace IUT_ACM_Solution.Controllers
             @event.OrganizedBy = eventDto.OrganizedBy;
             @event.LastUpdated = DateTime.UtcNow;
 
-            try
-            {
-                await _eventManagement.UpdateEventAsync(eventId, @event);
-                return NoContent(); // 204 No Content is standard for successful updates
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                return StatusCode(500, "Internal server error");
-            }
+            await _eventManagement.UpdateEventAsync(id, @event);
+            return RedirectToAction(nameof(Index));
         }
 
-        // DELETE: api/events/{eventId}
-        [HttpDelete("{eventId}")]
-        public async Task<IActionResult> DeleteEvent([FromRoute] Guid eventId)
+        // GET: /Event/Delete/{id}
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            var @event = await _eventManagement.GetEventByIdAsync(id);
             if (@event == null)
             {
                 return NotFound();
             }
+            return View(@event);
+        }
 
-            try
-            {
-                await _eventManagement.DeleteEventAsync(eventId);
-                return NoContent(); // 204 No Content is standard for successful deletions
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                return StatusCode(500, "Internal server error");
-            }
+        // POST: /Event/Delete/{id}
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            await _eventManagement.DeleteEventAsync(id);
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<string> HandleImageUpload(IFormFile? imageFile, ModelStateDictionary modelState)
