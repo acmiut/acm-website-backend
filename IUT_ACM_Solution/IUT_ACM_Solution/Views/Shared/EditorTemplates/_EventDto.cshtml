@@ -52,9 +52,9 @@
     <span asp-validation-for="Capacity" class="text-danger"></span>
 </div>
 
-<div class="form-group">
-    <label asp-for="IsTeamBased"></label>
-    <input asp-for="IsTeamBased" type="checkbox" />
+<div class="form-group form-check">
+    <input asp-for="IsTeamBased" class="form-check-input" />
+    <label asp-for="IsTeamBased" class="form-check-label"></label>
 </div>
 
 <div class="form-group">
@@ -63,9 +63,9 @@
     <span asp-validation-for="MaxTeamMembers" class="text-danger"></span>
 </div>
 
-<div class="form-group">
-    <label asp-for="RequiresRegistration"></label>
-    <input asp-for="RequiresRegistration" type="checkbox" />
+<div class="form-group form-check">
+    <input asp-for="RequiresRegistration" class="form-check-input" />
+    <label asp-for="RequiresRegistration" class="form-check-label"></label>
 </div>
 
 <div class="form-group">
