@@ -153,6 +153,20 @@ namespace IUT_ACM_Solution.Controllers
             }
         }
 
+        [HttpGet("get-teams")]
+        public async Task<IActionResult> GetEvents()
+        {
+            try
+            {
+                var teams = await teamManagement.GetTeamsAsync();
+                return View(teams);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         public IActionResult PaymentSuccess(string trackingCode)
         {
             return View("PaymentSuccess", trackingCode);
