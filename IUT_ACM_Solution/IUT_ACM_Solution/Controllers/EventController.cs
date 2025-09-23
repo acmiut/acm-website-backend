@@ -2,71 +2,65 @@
 using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IUT_ACM_Solution.Controllers
 {
 
-    [Route("event")]
-    public class EventController : Controller
+    [Route("api/events")]
+    [ApiController]
+    public class EventController : ControllerBase
     {
-        private readonly IEventManagement eventManagement;
+        private readonly IEventManagement _eventManagement;
 
         public EventController(IEventManagement eventManagement)
         {
-            this.eventManagement = eventManagement;
-        }
-        public async Task<IActionResult> Index()
-        {
-            var events = await eventManagement.GetEventsAsync();
-            return View(events);
+            _eventManagement = eventManagement;
         }
 
-        [HttpGet("add-event")]
-        public async Task<IActionResult> AddEvent()
+        // GET: api/events
+        [HttpGet]
+        public async Task<IActionResult> GetAllEvents()
         {
-            return View();
+            try
+            {
+                var events = await _eventManagement.GetEventsAsync();
+                return Ok(events);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details
+                // logger.LogError(ex, "Failed to retrieve events.");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        [HttpPost("add-event")]
-        public async Task<IActionResult> AddEvent([FromForm] EventDto eventDto)
+        // GET: api/events/{eventId}
+        [HttpGet("{eventId}")]
+        public async Task<IActionResult> GetEventById([FromRoute] Guid eventId)
+        {
+            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(@event);
+        }
+
+        // POST: api/events
+        [HttpPost]
+        public async Task<IActionResult> CreateEvent([FromForm] EventDto eventDto)
         {
             if (!ModelState.IsValid)
             {
-                return View(eventDto);
+                return BadRequest(ModelState);
             }
 
-            string imageUrl = string.Empty;
-
-            if (eventDto.ImageFile != null && eventDto.ImageFile.Length > 0)
+            var imageUrl = await HandleImageUpload(eventDto.ImageFile, ModelState);
+            if (!ModelState.IsValid)
             {
-                var extension = Path.GetExtension(eventDto.ImageFile.FileName).ToLower();
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-
-                if (!allowedExtensions.Contains(extension))
-                {
-                    ModelState.AddModelError("ImageFile", "Unsupported image format.");
-                    return View(eventDto);
-                }
-
-                var fileName = $"{Guid.NewGuid()}{extension}";
-                var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "events");
-
-                if (!Directory.Exists(folderPath))
-                    Directory.CreateDirectory(folderPath);
-
-                var filePath = Path.Combine(folderPath, fileName);
-
-                try
-                {
-                    using var stream = new FileStream(filePath, FileMode.Create);
-                    await eventDto.ImageFile.CopyToAsync(stream);
-                    imageUrl = $"/images/events/{fileName}";
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("ImageFile", $"Image upload failed: {ex.Message}");
-                    return View(eventDto);
-                }
+                return BadRequest(ModelState);
             }
 
             var @event = new Event
@@ -91,51 +85,41 @@ namespace IUT_ACM_Solution.Controllers
 
             try
             {
-                await eventManagement.CreateEventAsync(@event);
+                await _eventManagement.CreateEventAsync(@event);
+                return CreatedAtAction(nameof(GetEventById), new { eventId = @event.Id }, @event);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return View(eventDto);
+                // Log the exception
+                return StatusCode(500, "Internal server error");
             }
-
-            return RedirectToAction("Index", "Event");
         }
 
-        [HttpGet("update-event")]
-        public async Task<IActionResult> UpdateEvent(Guid eventId)
-        {
-            return View(eventId);
-        }
-
-        [HttpPost("update-event")]
-        public async Task<IActionResult> UpdateEvent(Guid eventId, [FromForm] EventDto eventDto)
+        // PUT: api/events/{eventId}
+        [HttpPut("{eventId}")]
+        public async Task<IActionResult> UpdateEvent([FromRoute] Guid eventId, [FromForm] EventDto eventDto)
         {
             if (!ModelState.IsValid)
             {
-                return View(eventDto);
+                return BadRequest(ModelState);
             }
 
-            var @event = await eventManagement.GetEventByIdAsync(eventId);
+            var @event = await _eventManagement.GetEventByIdAsync(eventId);
             if (@event == null)
             {
-                ModelState.AddModelError("", "Event not found.");
-                return View(eventDto);
+                return NotFound();
             }
 
             @event.Title = eventDto.Title;
             @event.Description = eventDto.Description;
 
-            if (eventDto.ImageFile != null && eventDto.ImageFile.Length > 0)
+            if (eventDto.ImageFile != null)
             {
-                var fileName = $"{Guid.NewGuid()}_{eventDto.ImageFile.FileName}";
-                var filePath = Path.Combine("wwwroot/images/events", fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                @event.ImageUrl = await HandleImageUpload(eventDto.ImageFile, ModelState);
+                if (!ModelState.IsValid)
                 {
-                    await eventDto.ImageFile.CopyToAsync(stream);
+                    return BadRequest(ModelState);
                 }
-
-                @event.ImageUrl = $"/images/events/{fileName}";
             }
 
             @event.Location = eventDto.Location;
@@ -147,57 +131,81 @@ namespace IUT_ACM_Solution.Controllers
             @event.IsTeamBased = eventDto.IsTeamBased;
             @event.MaxTeamMembers = eventDto.MaxTeamMembers;
             @event.RequiresRegistration = eventDto.RequiresRegistration;
-            @event.Fee = eventDto.Fee; 
+            @event.Fee = eventDto.Fee;
             @event.OrganizedBy = eventDto.OrganizedBy;
+            @event.LastUpdated = DateTime.UtcNow;
 
-            await eventManagement.UpdateEventAsync(eventId, @event);
-
-            return RedirectToAction("Details", new { id = eventId });
-        }
-        
-        [HttpGet("get-events")]    
-        
-        public async Task<IActionResult> GetAllEvents()
-        {
             try
             {
-                var events = await eventManagement.GetEventsAsync();
-                return View(events);
+                await _eventManagement.UpdateEventAsync(eventId, @event);
+                return NoContent(); // 204 No Content is standard for successful updates
             }
             catch (Exception ex)
-            { 
+            {
+                // Log the exception
                 return StatusCode(500, "Internal server error");
             }
         }
 
-        [HttpGet("get-event/{eventId}")]
-        public async Task<IActionResult> GetEventById([FromRoute] Guid eventId)
-        {
-            try
-            {
-                var @event = await eventManagement.GetEventByIdAsync(eventId);
-                if (@event == null) return NotFound();
-                return View(@event);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error");
-            }
-        }
-
-        [HttpDelete("delete-event/{eventId}")]
+        // DELETE: api/events/{eventId}
+        [HttpDelete("{eventId}")]
         public async Task<IActionResult> DeleteEvent([FromRoute] Guid eventId)
         {
+            var @event = await _eventManagement.GetEventByIdAsync(eventId);
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
             try
             {
-                await eventManagement.DeleteEventAsync(eventId);
-                return RedirectToAction("");
+                await _eventManagement.DeleteEventAsync(eventId);
+                return NoContent(); // 204 No Content is standard for successful deletions
             }
             catch (Exception ex)
             {
+                // Log the exception
                 return StatusCode(500, "Internal server error");
             }
         }
 
+        private async Task<string> HandleImageUpload(IFormFile? imageFile, ModelStateDictionary modelState)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                modelState.AddModelError("ImageFile", "Unsupported image format. Allowed formats: JPG, JPEG, PNG, WEBP.");
+                return string.Empty;
+            }
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "events");
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            var filePath = Path.Combine(folderPath, fileName);
+
+            try
+            {
+                await using var stream = new FileStream(filePath, FileMode.Create);
+                await imageFile.CopyToAsync(stream);
+                return $"/images/events/{fileName}";
+            }
+            catch (Exception ex)
+            {
+                modelState.AddModelError("ImageFile", $"Image upload failed: {ex.Message}");
+                return string.Empty;
+            }
+        }
     }
 }
