@@ -172,5 +172,19 @@ namespace IUT_ACM_Solution.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpDelete("delete-event/{eventId}")]
+        public async Task<IActionResult> DeleteEvent([FromRoute] Guid eventId)
+        {
+            try
+            {
+                await eventManagement.DeleteEventAsync(eventId);
+                return RedirectToAction("");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
