@@ -1,28 +1,31 @@
-﻿@model IUT_ACM_Solution.DTOs.TeamDto
+﻿@model IUT_ACM_Solution.ViewModels.TeamRegisterationViewModel
+
 @{
     ViewData["Title"] = "Register Team";
-    var eventInfo = ViewBag.Event as IUT_ACM_Solution.Models.Event;
 }
 
-<h2>Register for @eventInfo?.Title</h2>
+<h2>Register for @Model.EventTitle</h2>
+<p><strong>Fee:</strong> @Model.Fee</p>
 
 <form asp-action="Register" method="post">
+    <input type="hidden" asp-for="EventId" />
+
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="form-group">
-        <label asp-for="TeamName"></label>
-        <input asp-for="TeamName" class="form-control" />
-        <span asp-validation-for="TeamName" class="text-danger"></span>
+        <label asp-for="Team.TeamName"></label>
+        <input asp-for="Team.TeamName" class="form-control" />
+        <span asp-validation-for="Team.TeamName" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label>Team Member Emails</label>
-        <textarea asp-for="TeamMemberEmails" class="form-control" rows="4" placeholder="Enter one email per line"></textarea>
-        <span asp-validation-for="TeamMemberEmails" class="text-danger"></span>
+        <textarea asp-for="Team.TeamMemberEmails" class="form-control" rows="4" placeholder="Enter one email per line"></textarea>
+        <span asp-validation-for="Team.TeamMemberEmails" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-success">Proceed to Payment</button>
+    <a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-secondary">Back to Event</a>
 </form>
 
 @section Scripts {
