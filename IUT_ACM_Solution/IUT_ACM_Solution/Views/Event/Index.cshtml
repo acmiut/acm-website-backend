@@ -31,8 +31,14 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@evt.Id">Details</a> |
                     <a asp-action="Edit" asp-route-id="@evt.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@evt.Id">Delete</a> |
-                    <a asp-controller="Team" asp-action="Register" asp-route-id="@evt.Id">Register</a>
+                    <a asp-action="Delete" asp-route-id="@evt.Id">Delete</a>
+                    @if (evt.RequiresRegistration)
+                    {
+                        <a asp-controller="Team" asp-action="Register" asp-route-eventId="@evt.Id" class="btn btn-success ml-2">
+                            Register a Team
+                        </a>
+                    }
+
                 </td>
             </tr>
         }
