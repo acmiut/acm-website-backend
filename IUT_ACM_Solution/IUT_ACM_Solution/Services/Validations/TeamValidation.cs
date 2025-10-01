@@ -81,6 +81,15 @@ namespace IUT_ACM_Solution.Services.Validations
                 return basicValidation;
             }
 
+            // Check the team name to be unique 
+            foreach(var t in team.Event.ParticipatingTeams)
+            {
+                if (t.TeamName == team.TeamName)
+                {
+                    return ValidationResult.Invalid("There is already a team with this name");
+                }
+            }
+
             // Creation-specific validations
             if (team.Id != Guid.Empty)
             {
