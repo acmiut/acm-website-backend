@@ -24,6 +24,7 @@ namespace IUT_ACM_Solution.Services
                 throw new InvalidOperationException(validationResult.ErrorMessage);
             }
 
+
             await teamRepository.CreateTeamAsync(team);
         }
 
