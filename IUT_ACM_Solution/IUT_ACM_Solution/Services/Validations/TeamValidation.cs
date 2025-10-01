@@ -147,6 +147,13 @@ namespace IUT_ACM_Solution.Services.Validations
                 return ValidationResult.Invalid("Cannot remove event association from team");
             }
 
+            // Prevent updating team name
+            var existingTeam = await teamRepository.GetTeamByIdAsync(team.Id);
+            if (existingTeam.TeamName != team.TeamName)
+            {
+                return ValidationResult.Invalid("Team name cannot be updated");
+            }
+
             // Validate payment status changes
             if (team.HasPaid && team.FeeToPay > 0 && string.IsNullOrWhiteSpace(team.Authority))
             {
