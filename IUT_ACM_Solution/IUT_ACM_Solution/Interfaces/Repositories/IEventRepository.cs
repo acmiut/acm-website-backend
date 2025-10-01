@@ -9,5 +9,6 @@ namespace IUT_ACM_Solution.Interfaces.Repositories
         public Task<Event> GetEventByIdAsync(Guid id);
         public Task UpdateEventAsync(Guid eventId, Event @event);
         public Task DeleteEventAsync(Guid eventId);
+        public Task<bool> ExistsEventByTitleAndDateAsync(string Title, DateTime startDate, DateTime endDate);
     }
 }

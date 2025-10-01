@@ -106,5 +106,22 @@ namespace IUT_ACM_Solution.Repositories
                 throw new Exception("Error updating event", ex);
             }
         }
+
+        public async Task<bool> ExistsEventByTitleAndDateAsync(string Title, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var @event = await dbContext.Events.FirstOrDefaultAsync(x => x.Title == Title && x.StartDate == startDate && x.EndDate == endDate);
+                if (@event == null)
+                    return false;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in checking if the event is duplicate", ex);
+            }
+            
+        }
+
     }
 }

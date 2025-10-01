@@ -1,4 +1,5 @@
-﻿using IUT_ACM_Solution.Interfaces.Validations;
+﻿using IUT_ACM_Solution.Interfaces.Repositories;
+using IUT_ACM_Solution.Interfaces.Validations;
 using IUT_ACM_Solution.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +11,12 @@ namespace IUT_ACM_Solution.Services.Validations
         private const int MAX_EVENT_DURATION_DAYS = 365;
         private const int MIN_TEAM_SIZE = 1;
         private const int MAX_TEAM_SIZE = 50;
+        private readonly IEventRepository eventRepository;
+
+        public EventValidation(IEventRepository eventRepository)
+        {
+            this.eventRepository = eventRepository;
+        }
 
         public IValidationResult ValidateEvent(Event @event)
         {
@@ -105,6 +112,12 @@ namespace IUT_ACM_Solution.Services.Validations
                 return ValidationResult.Invalid("New events cannot have existing participating teams");
             }
 
+            var exists = await eventRepository.ExistsEventByTitleAndDateAsync(@event.Title, @event.StartDate, @event.EndDate);
+            if (exists)
+            {
+                return ValidationResult.Invalid("A similar event with the same title and date already exists.");
+            }
+
             // Simulate async database checks
             await Task.CompletedTask;
 
@@ -160,6 +173,12 @@ namespace IUT_ACM_Solution.Services.Validations
                 {
                     return ValidationResult.Invalid("Ongoing events cannot have already ended");
                 }
+            }
+
+            var exists = await eventRepository.ExistsEventByTitleAndDateAsync(@event.Title, @event.StartDate, @event.EndDate);
+            if (exists)
+            {
+                return ValidationResult.Invalid("A similar event with the same title and date already exists.");
             }
 
             // Simulate async database checks
