@@ -4,7 +4,7 @@ namespace IUT_ACM_Solution.Interfaces.Validations
 {
     public interface ITeamValidation
     {
-        IValidationResult ValidateTeam(Team team);
+        Task<IValidationResult> ValidateTeam(Team team);
         Task<IValidationResult> ValidateTeamCreationAsync(Team team);
         Task<IValidationResult> ValidateTeamUpdateAsync(Team team);
     }
