@@ -8,7 +8,9 @@ namespace IUT_ACM_Solution.Services.Validations
         public bool IsValid { get; }
         public string ErrorMessage { get; }
 
-        private ValidationResult(bool isValid, string errorMessage)
+        public ValidationResult()
+        {}
+        public ValidationResult(bool isValid, string errorMessage)
         {
             IsValid = isValid;
             ErrorMessage = errorMessage;
