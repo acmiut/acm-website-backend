@@ -19,12 +19,12 @@ namespace IUT_ACM_Solution.Services
         }
         public async Task CreateEventAsync(Event @event)
         {
-            var validationResult = await eventValidation.ValidateEventCreationAsync(@event);
+            /*var validationResult = await eventValidation.ValidateEventCreationAsync(@event);
             
             if (!validationResult.IsValid)
             {
                 throw new InvalidOperationException($"Event validation failed: {validationResult.ErrorMessage}");
-            }
+            }*/
 
             @event.CreatedAt = DateTime.UtcNow;
             @event.LastUpdated = DateTime.UtcNow;

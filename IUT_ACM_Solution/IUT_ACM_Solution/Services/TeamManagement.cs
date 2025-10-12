@@ -18,11 +18,11 @@ namespace IUT_ACM_Solution.Services
 
         public async Task CreateTeamAsync(Team team)
         {
-            var validationResult = await teamValidation.ValidateTeamCreationAsync(team);
-            if (!validationResult.IsValid)
-            {
-                throw new InvalidOperationException(validationResult.ErrorMessage);
-            }
+            //var validationResult = await teamValidation.ValidateTeamCreationAsync(team);
+            //if (!validationResult.IsValid)
+            //{
+            //    throw new InvalidOperationException(validationResult.ErrorMessage);
+            //}
 
 
             await teamRepository.CreateTeamAsync(team);
@@ -30,7 +30,7 @@ namespace IUT_ACM_Solution.Services
 
         public async Task UpdateTeamAsync(Guid teamId, Team team)
         {
-            if (team.Id != Guid.Empty && team.Id != teamId)
+            /*if (team.Id != Guid.Empty && team.Id != teamId)
             {
                 throw new InvalidOperationException("Team ID mismatch between route and payload");
             }
@@ -39,7 +39,7 @@ namespace IUT_ACM_Solution.Services
             if (!validationResult.IsValid)
             {
                 throw new InvalidOperationException(validationResult.ErrorMessage);
-            }
+            }*/
 
             await teamRepository.UpdateTeamAsync(teamId, team);
         }

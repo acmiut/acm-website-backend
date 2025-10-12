@@ -79,15 +79,11 @@ namespace IUT_ACM_Solution.Controllers
         public async Task<IActionResult> Register(TeamRegisterationViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var @event = await _eventManagement.GetEventByIdAsync(model.EventId);
             if (@event == null)
-            {
                 return NotFound("Event not found.");
-            }
 
             var team = new Team
             {
@@ -103,21 +99,36 @@ namespace IUT_ACM_Solution.Controllers
             var user = await _userManager.FindByEmailAsync(User.Identity?.Name ?? "");
             var callbackUrl = Url.Action("CompleteRegistration", "Team", new { teamId = team.Id, eventId = model.EventId }, Request.Scheme);
 
-            var req = await _payment.Request(new DtoRequest()
+            using var httpClient = new HttpClient();
+            var requestBody = new
             {
-                Amount = team.FeeToPay,
-                CallbackUrl = callbackUrl!,
-                Description = @event.Title,
-                Email = User.Identity?.Name,
-                Mobile = user?.ContactNumber,
-                MerchantId = _zarinPalOptions.Value.MerchantId
-            }, Payment.Mode.sandbox);
+                merchant_id = _zarinPalOptions.Value.MerchantId,
+                amount = team.FeeToPay,
+                description = @event.Title,
+                callback_url = callbackUrl,
+                metadata = new
+                {
+                    email = User.Identity?.Name,
+                    mobile = user?.ContactNumber
+                }
+            };
 
-            team.Authority = req.Authority;
-            await _teamManagement.UpdateTeamAsync(team.Id, team);
+            var response = await httpClient.PostAsJsonAsync("https://sandbox.zarinpal.com/pg/v4/payment/request.json", requestBody);
+            var result = await response.Content.ReadFromJsonAsync<ZarinpalPaymentResponse>();
 
-            return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{req.Authority}");
+            if (result?.data?.code == 100)
+            {
+                team.Authority = result.data.authority;
+                await _teamManagement.UpdateTeamAsync(team.Id, team);
+                return Redirect($"https://sandbox.zarinpal.com/pg/StartPay/{result.data.authority}");
+            }
+            else
+            {
+                ViewBag.Message = $"Payment request failed. Code: {result?.errors?.GetRawText() ?? "Unknown"}";
+                return View("PaymentFailed");
+            }
         }
+
         // GET: /Team/CompleteRegistration
         public async Task<IActionResult> CompleteRegistration(Guid teamId, string authority, string status)
         {
@@ -134,18 +145,22 @@ namespace IUT_ACM_Solution.Controllers
                 return View("PaymentFailed");
             }
 
-            var verification = await _payment.Verification(new DtoVerification()
+            using var httpClient = new HttpClient();
+            var verifyBody = new
             {
-                Amount = team.FeeToPay,
-                Authority = authority,
-                MerchantId = _zarinPalOptions.Value.MerchantId
-            }, Payment.Mode.sandbox);
+                merchant_id = _zarinPalOptions.Value.MerchantId,
+                amount = team.FeeToPay,
+                authority = authority
+            };
 
-            if (verification.Status == 100)
+            var response = await httpClient.PostAsJsonAsync("https://sandbox.zarinpal.com/pg/v4/payment/verify.json", verifyBody);
+            var result = await response.Content.ReadFromJsonAsync<ZarinpalVerificationResponse>();
+
+            if (result?.data?.code == 100)
             {
                 team.HasPaid = true;
                 await _teamManagement.UpdateTeamAsync(team.Id, team);
-                ViewBag.TrackingCode = verification.RefId;
+                ViewBag.TrackingCode = result.data.ref_id;
                 return View("PaymentSuccess", team);
             }
             else
