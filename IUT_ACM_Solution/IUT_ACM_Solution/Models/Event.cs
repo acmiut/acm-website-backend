@@ -31,7 +31,6 @@ namespace IUT_ACM_Solution.Models
         [StringLength(2000)]
         public string Description { get; set; } = string.Empty;
 
-        [Url]
         [StringLength(500)]
         public string ImageUrl { get; set; } = string.Empty;
 
