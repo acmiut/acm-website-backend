@@ -1,4 +1,4 @@
-﻿namespace IUT_ACM_Solution.Interfaces
+﻿namespace IUT_ACM_Solution.Interfaces.Services
 {
     public interface IEmailService
     {

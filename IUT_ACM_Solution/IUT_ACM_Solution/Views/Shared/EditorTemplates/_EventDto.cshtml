@@ -1,0 +1,81 @@
+﻿@model IUT_ACM_Solution.DTOs.EventDto
+
+<div class="form-group">
+    <label asp-for="Title"></label>
+    <input asp-for="Title" class="form-control" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="Description"></label>
+    <textarea asp-for="Description" class="form-control"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="ImageFile"></label>
+    <input asp-for="ImageFile" type="file" class="form-control" />
+    <span asp-validation-for="ImageFile" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="Location"></label>
+    <input asp-for="Location" class="form-control" />
+    <span asp-validation-for="Location" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="StartDate"></label>
+    <input asp-for="StartDate" type="datetime-local" class="form-control" />
+    <span asp-validation-for="StartDate" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="EndDate"></label>
+    <input asp-for="EndDate" type="datetime-local" class="form-control" />
+    <span asp-validation-for="EndDate" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="EventType"></label>
+    <select asp-for="EventType" class="form-control" asp-items="Html.GetEnumSelectList<EventType>()"></select>
+</div>
+
+<div class="form-group">
+    <label asp-for="Status"></label>
+    <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<EventStatus>()"></select>
+</div>
+
+<div class="form-group">
+    <label asp-for="Capacity"></label>
+    <input asp-for="Capacity" class="form-control" />
+    <span asp-validation-for="Capacity" class="text-danger"></span>
+</div>
+
+<div class="form-group form-check">
+    <input asp-for="IsTeamBased" class="form-check-input" />
+    <label asp-for="IsTeamBased" class="form-check-label"></label>
+</div>
+
+<div class="form-group">
+    <label asp-for="MaxTeamMembers"></label>
+    <input asp-for="MaxTeamMembers" class="form-control" />
+    <span asp-validation-for="MaxTeamMembers" class="text-danger"></span>
+</div>
+
+<div class="form-group form-check">
+    <input asp-for="RequiresRegistration" class="form-check-input" />
+    <label asp-for="RequiresRegistration" class="form-check-label"></label>
+</div>
+
+<div class="form-group">
+    <label asp-for="Fee"></label>
+    <input asp-for="Fee" class="form-control" />
+    <span asp-validation-for="Fee" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="OrganizedBy"></label>
+    <input asp-for="OrganizedBy" class="form-control" />
+    <span asp-validation-for="OrganizedBy" class="text-danger"></span>
+</div>

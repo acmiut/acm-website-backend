@@ -1,0 +1,46 @@
+﻿@model IEnumerable<IUT_ACM_Solution.Models.Event>
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<h2>Events</h2>
+
+<a asp-action="Create" class="btn btn-primary">Create New Event</a>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var evt in Model)
+        {
+            <tr>
+                <td>@evt.Title</td>
+                <td>@evt.StartDate.ToShortDateString()</td>
+                <td>@evt.EndDate.ToShortDateString()</td>
+                <td>@evt.Location</td>
+                <td>@evt.Status</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@evt.Id">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@evt.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@evt.Id">Delete</a>
+                    @if (evt.RequiresRegistration)
+                    {
+                        <a asp-controller="Team" asp-action="Register" asp-route-eventId="@evt.Id" class="btn btn-success ml-2">
+                            Register a Team
+                        </a>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

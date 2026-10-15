@@ -4,8 +4,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System;
-using IUT_ACM_Solution.Interfaces;
 using IUT_ACM_Solution.Services;
+using IUT_ACM_Solution.Interfaces.Services;
+using IUT_ACM_Solution.Interfaces.Repositories;
+using IUT_ACM_Solution.Repositories;
+using IUT_ACM_Solution.Interfaces.Validations;
+using IUT_ACM_Solution.Services.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IEventManagement, EventManagement>();
+builder.Services.AddScoped<ITeamManagement, TeamManagement>();
+builder.Services.AddScoped<IValidationResult, ValidationResult>();
+builder.Services.AddScoped<IEventValidation, EventValidation>();
+builder.Services.AddScoped<ITeamValidation, TeamValidation>();
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -59,6 +70,8 @@ builder.Services.AddAuthentication()
 
 builder.Services.Configure<SmtpSetting>(
     builder.Configuration.GetSection("SmtpSetting"));
+builder.Services.Configure<ZarinPalSetting>(
+    builder.Configuration.GetSection("ZarinPal"));
 
 var app = builder.Build();
 

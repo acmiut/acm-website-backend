@@ -1,5 +1,5 @@
 ﻿using IUT_ACM_Solution.DTOs;
-using IUT_ACM_Solution.Interfaces;
+using IUT_ACM_Solution.Interfaces.Services;
 using IUT_ACM_Solution.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

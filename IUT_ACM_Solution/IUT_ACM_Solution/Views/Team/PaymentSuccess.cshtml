@@ -1,0 +1,12 @@
+﻿@model IUT_ACM_Solution.Models.Team
+
+@{
+    ViewData["Title"] = "Payment Successful";
+}
+
+<h2>Payment Successful</h2>
+
+<p>Your team <strong>@Model.TeamName</strong> has been registered successfully.</p>
+<p><strong>Tracking Code:</strong> @ViewBag.TrackingCode</p>
+
+<a asp-action="Index" class="btn btn-success">Back to Teams</a>
