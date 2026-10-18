@@ -13,6 +13,7 @@ namespace IUT_ACM_Solution.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<UserEvent> UserEvents { get; set; }
+        public DbSet<PendingRegistration> PendingRegistrations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -73,6 +74,16 @@ namespace IUT_ACM_Solution.Data
                 // Index
                 entity.HasIndex(t => t.EventId);
                 entity.HasIndex(t => t.TeamName);
+            });
+
+            // PendingRegistration Configuration (sign-ups waiting for email confirmation)
+            modelBuilder.Entity<PendingRegistration>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+
+                entity.HasIndex(p => p.Email).IsUnique();
+                entity.HasIndex(p => p.TokenHash).IsUnique();
+                entity.HasIndex(p => p.ExpiresAt);
             });
 
             // UserEvent Configuration (Many-to-Many)

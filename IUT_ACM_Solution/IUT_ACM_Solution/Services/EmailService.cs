@@ -14,13 +14,18 @@ namespace IUT_ACM_Solution.Services
         {
             this.smtpSetting = smtpSetting;
         }
-        public async Task SendAsync(string to, string subject, string body)
+        public async Task SendAsync(string to, string subject, string body, bool isHtml = false)
         {
             var message = new MailMessage(
                 smtpSetting.Value.SenderEmail,
                 to,
                 subject,
-                body);
+                body)
+            {
+                IsBodyHtml = isHtml,
+                SubjectEncoding = System.Text.Encoding.UTF8,
+                BodyEncoding = System.Text.Encoding.UTF8
+            };
 
             using (var emailClient = new SmtpClient(smtpSetting.Value.Host, smtpSetting.Value.Port))
             {

@@ -25,6 +25,7 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<IEventManagement, EventManagement>();
+builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ITeamManagement, TeamManagement>();
 builder.Services.AddScoped<IValidationResult, ValidationResult>();
 builder.Services.AddScoped<IEventValidation, EventValidation>();
@@ -73,6 +74,17 @@ builder.Services.Configure<SmtpSetting>(
 builder.Services.Configure<ZarinPalSetting>(
     builder.Configuration.GetSection("ZarinPal"));
 
+// CORS for the React frontend (only needed when it is served from another origin than this app;
+// during development the Vite dev-server proxies /api so it is not used).
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+        policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -98,6 +110,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
